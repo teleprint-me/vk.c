@@ -1,4 +1,6 @@
 /**
+ * Copyright © 2024 Austin Berrio
+ *
  * @file examples/simple.c
  * 
  * @note Apply zero-initialization strategy to maintain a "sane" default implementation.
@@ -11,10 +13,6 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-// ***
-// Create the Vulkan device object
-// ***
 
 // @note we only need a help text and the ability to pass a file path to the
 // shader being utilized for compute operations.
@@ -52,6 +50,10 @@ int main(void) {
         fprintf(stderr, "Failed to create logical device! (Error code: %d)\n", result);
         exit(EXIT_FAILURE);
     }
+
+    // Retrieve the queue for compute operations
+    struct VkQueue_T* computeQueue;
+    vkGetDeviceQueue(logicalDevice, computeQueueFamilyIndex, 0, &computeQueue);
 
     // Clean up logical device
     vkDestroyDevice(logicalDevice, NULL);
