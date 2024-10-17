@@ -39,7 +39,7 @@ uint32_t get_physical_device_count(struct VkInstance_T* pVkInstance) {
 
 struct VkPhysicalDevice_T* create_physical_devices(struct VkInstance_T* pVkInstance, uint32_t deviceCount) {
     struct VkPhysicalDevice_T* pPhysicalDevices = malloc(deviceCount * sizeof(struct VkPhysicalDevice_T*));
-    vkEnumeratePhysicalDevices(pVkInstance, &deviceCount, pPhysicalDevices);
+    vkEnumeratePhysicalDevices(pVkInstance, &deviceCount, &pPhysicalDevices);
     return pPhysicalDevices;
 }
 
@@ -96,7 +96,7 @@ uint32_t get_physical_device_queue_family(struct VkPhysicalDevice_T* pVkPhysical
     uint32_t queueFamilyCount = get_physical_device_queue_family_count(pVkPhysicalDevice);
 
     VkQueueFamilyProperties queueFamilies[queueFamilyCount];
-    vkGetPhysicalDeviceQueueFamilyProperties(physicalDevice, &queueFamilyCount, queueFamilies);
+    vkGetPhysicalDeviceQueueFamilyProperties(pVkPhysicalDevice, &queueFamilyCount, queueFamilies);
 
     for (uint32_t i = 0; i < queueFamilyCount; i++) {
         if (queueFamilies[i].queueFlags & VK_QUEUE_COMPUTE_BIT) {
@@ -115,15 +115,15 @@ int main(int argc, char* argv[]) {
     vulkan_instance_t* vkInstance = create_vulkan_instance("SimpleApp", "SimpleEngine");
 
     // Create the vulkan device instance objects
-    uint32_t deviceCount = get_physical_device_count(vkInstance);
-    struct VkPhysicalDevice_T* pPhysicalDevices = create_physical_devices(vkInstance, deviceCount);
+    uint32_t deviceCount = get_physical_device_count(vkInstance->handle);
+    struct VkPhysicalDevice_T* pPhysicalDevices = create_physical_devices(vkInstance->handle, deviceCount);
 
     VkDeviceQueueCreateInfo deviceQueueInfo = create_device_queue_info();
-    VkDevice vkDevice = create_vk_device();
+    // VkDevice vkDevice = create_vk_device();
 
     // Clean up
     destroy_vulkan_instance(vkInstance);
-    vkDestroyDevice(vkDevice, NULL);
+    // vkDestroyDevice(vkDevice, NULL);
 
     return 0;
 }
