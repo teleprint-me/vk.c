@@ -41,7 +41,7 @@
   },
   "isort.args": ["--profile", "black"],
   // C/C++ specific settings
-  "clang-format.executable": "/usr/bin/clang-format",
+  // "clang-format.executable": "/usr/bin/clang-format",
   // Enable clang-format on save for C/C++ code
   "editor.codeActionsOnSave": {
     "source.organizeImports": "explicit"
@@ -61,13 +61,7 @@
   "[c]": {
     "editor.defaultFormatter": "xaver.clang-format",
     "editor.tabSize": 4,
-    "editor.formatOnSave": true,
-    "editor.insertSpaces": true
-  },
-  "[cpp]": {
-    "editor.defaultFormatter": "xaver.clang-format",
-    "editor.tabSize": 4,
-    "editor.formatOnSave": true,
+    "editor.formatOnSave": false,
     "editor.insertSpaces": true
   }
 }
