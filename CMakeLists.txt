@@ -9,7 +9,7 @@ set(CMAKE_C_STANDARD_REQUIRED ON)
 set(CMAKE_C_EXTENSIONS ON)
 
 # Setup submodule, module, and test names
-set(MODULES "vk-instance") # Add more modules here as needed
+set(MODULES "vk-instance" "vk-device") # Add more modules here as needed
 
 # Set the output directory for built binaries
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
