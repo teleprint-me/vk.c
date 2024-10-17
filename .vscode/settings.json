@@ -63,5 +63,10 @@
     "editor.tabSize": 4,
     "editor.formatOnSave": false,
     "editor.insertSpaces": true
+  },
+  "files.associations": {
+    "*.tcss": "jinja-css",
+    "*.h": "c",
+    "cstdlib": "c"
   }
 }
