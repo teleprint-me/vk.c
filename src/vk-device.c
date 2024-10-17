@@ -36,3 +36,17 @@ struct VkDeviceQueueCreateInfo create_device_queue_info(void) {
     deviceQueueInfo.pQueuePriorities = &queuePriority; // Required field
     return deviceQueueInfo;
 }
+
+uint32_t get_physical_device_count(struct VkInstance_T* pVkInstance) {
+    uint32_t physicalDeviceCount = 0;
+    enum VkResult result = vkEnumeratePhysicalDevices(pVkInstance, &physicalDeviceCount, NULL);
+    if (VK_SUCCESS != result) {
+        fprintf(stderr, "Failed to enumerate physical devices with Vulkan! (Error code: %d)\n", result);
+        exit(EXIT_FAILURE);
+    }
+    if (0 == physicalDeviceCount) {
+        fprintf(stderr, "Failed to find GPUs with Vulkan support!\n");
+        exit(EXIT_FAILURE);
+    }
+    return physicalDeviceCount;
+}
