@@ -151,3 +151,30 @@ uint32_t get_physical_device_queue_family(
     // Fallback to first available queue family
     return 0;
 }
+
+struct VkDevice_T* create_logical_device(
+    struct VkPhysicalDevice_T* selectedPhysicalDevice,
+    struct VkDeviceCreateInfo* deviceInfo
+) {
+    // Create a logical device
+    struct VkDevice_T* logicalDevice;  // Logical device handle
+    enum VkResult result = vkCreateDevice(
+        selectedPhysicalDevice, deviceInfo, NULL, &logicalDevice
+    );
+
+    if (VK_SUCCESS != result) {
+        fprintf(stderr, "Failed to create logical device! (Error code: %d)\n", result);
+        exit(EXIT_FAILURE);
+    }
+
+    return logicalDevice;
+}
+
+struct VkQueue_T* get_logical_device_queue(
+    struct VkDevice_T* logicalDevice, uint32_t queueFamilyIndex
+) {
+    // Retrieve the queue for compute operations
+    struct VkQueue_T* computeQueue;
+    vkGetDeviceQueue(logicalDevice, queueFamilyIndex, 0, &computeQueue);
+    return computeQueue;
+}
