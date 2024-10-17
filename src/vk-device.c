@@ -14,34 +14,26 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-struct VkDeviceCreateInfo create_device_info(void) {
-    struct VkDeviceCreateInfo deviceInfo = {};
-    deviceInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
-    // Can be updated with queue info later
-    deviceInfo.queueCreateInfoCount = 0;
-    deviceInfo.pQueueCreateInfos = NULL;
-    // No device extensions by default
-    deviceInfo.enabledExtensionCount = 0;
-    deviceInfo.ppEnabledExtensionNames = NULL;
-    // No validation layers by default
-    deviceInfo.enabledLayerCount = 0;
-    deviceInfo.ppEnabledLayerNames = NULL;
-    // Leave this as NULL until specific features are needed
-    deviceInfo.pEnabledFeatures = NULL;
+struct VkDeviceCreateInfo* create_device_info(void) {
+    struct VkDeviceCreateInfo* deviceInfo = (struct VkDeviceCreateInfo*) malloc(sizeof(struct VkDeviceCreateInfo));
+    deviceInfo->sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    deviceInfo->queueCreateInfoCount = 0;
+    deviceInfo->pQueueCreateInfos = NULL;
+    deviceInfo->enabledExtensionCount = 0;
+    deviceInfo->ppEnabledExtensionNames = NULL;
+    deviceInfo->enabledLayerCount = 0;
+    deviceInfo->ppEnabledLayerNames = NULL;
+    deviceInfo->pEnabledFeatures = NULL;
     return deviceInfo;
 }
 
-struct VkDeviceQueueCreateInfo create_device_queue_info(void) {
-    // Default priority
+struct VkDeviceQueueCreateInfo* create_device_queue_info(void) {
     static float queuePriority = 1.0f;
-    struct VkDeviceQueueCreateInfo deviceQueueInfo = {};
-    deviceQueueInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
-    // Default to the first queue family
-    deviceQueueInfo.queueFamilyIndex = 0;
-    // Start with one queue for now
-    deviceQueueInfo.queueCount = 1;
-    // Required field
-    deviceQueueInfo.pQueuePriorities = &queuePriority;
+    struct VkDeviceQueueCreateInfo* deviceQueueInfo = (struct VkDeviceQueueCreateInfo*) malloc(sizeof(struct VkDeviceQueueCreateInfo));
+    deviceQueueInfo->sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+    deviceQueueInfo->queueFamilyIndex = 0;
+    deviceQueueInfo->queueCount = 1;
+    deviceQueueInfo->pQueuePriorities = &queuePriority;
     return deviceQueueInfo;
 }
 
@@ -178,3 +170,7 @@ struct VkQueue_T* get_logical_device_queue(
     vkGetDeviceQueue(logicalDevice, queueFamilyIndex, 0, &computeQueue);
     return computeQueue;
 }
+
+vulkan_device_t* create_vulkan_device(vulkan_instance_t* vkInstance) {}
+
+void destroy_vulkan_device(vulkan_device_t* vkDevice) {}
