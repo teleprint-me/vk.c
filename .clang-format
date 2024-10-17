@@ -92,7 +92,7 @@ InsertNewlineAtEOF: true
 SeparateDefinitionBlocks: Always
 
 # Line width and wrapping
-ColumnLimit: 120
+ColumnLimit: 79
 
 # Commented out options (for version compatibility or preference)
 # BracedInitializerIndentWidth: 4  # Requires clang-format version 17 or higher
