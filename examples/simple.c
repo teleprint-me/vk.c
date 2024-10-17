@@ -92,9 +92,7 @@ void destroy_queue_family_properties(struct VkQueueFamilyProperties* pPhysicalDe
     }
 }
 
-uint32_t get_physical_device_queue_family(struct VkPhysicalDevice_T* pVkPhysicalDevice) {
-    uint32_t queueFamilyCount = get_physical_device_queue_family_count(pVkPhysicalDevice);
-
+uint32_t get_physical_device_queue_family(struct VkPhysicalDevice_T* pVkPhysicalDevice, uint32_t queueFamilyCount) {
     VkQueueFamilyProperties queueFamilies[queueFamilyCount];
     vkGetPhysicalDeviceQueueFamilyProperties(pVkPhysicalDevice, &queueFamilyCount, queueFamilies);
 
@@ -111,19 +109,25 @@ uint32_t get_physical_device_queue_family(struct VkPhysicalDevice_T* pVkPhysical
 // @note we only need a help text and the ability to pass a file path to the
 // shader being utilized for compute operations.
 int main(int argc, char* argv[]) {
-    // Create the vulkan instance objects
+    // Create the Vulkan instance objects
     vulkan_instance_t* vkInstance = create_vulkan_instance("SimpleApp", "SimpleEngine");
 
-    // Create the vulkan device instance objects
+    // Create the Vulkan device instance objects
     uint32_t deviceCount = get_physical_device_count(vkInstance->handle);
     struct VkPhysicalDevice_T* pPhysicalDevices = create_physical_devices(vkInstance->handle, deviceCount);
 
-    VkDeviceQueueCreateInfo deviceQueueInfo = create_device_queue_info();
-    // VkDevice vkDevice = create_vk_device();
+    // Pick the best physical device (discrete GPU preferred)
+    struct VkPhysicalDevice_T* physicalDevice = get_physical_device(vkInstance->handle, pPhysicalDevices, deviceCount);
+    uint32_t queueFamilyCount = get_physical_device_queue_family_count(physicalDevice);
+    uint32_t queueFamilyIndex = get_physical_device_queue_family(physicalDevice, queueFamilyCount);
+
+    // Create a device (placeholder)
+    VkDevice vkDevice = create_vk_device(physicalDevice, queueFamilyIndex);
 
     // Clean up
+    destroy_physical_devices(pPhysicalDevices);
     destroy_vulkan_instance(vkInstance);
-    // vkDestroyDevice(vkDevice, NULL);
+    // vkDestroyDevice(vkDevice, NULL); // Once device creation is implemented
 
     return 0;
 }
