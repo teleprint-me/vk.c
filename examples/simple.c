@@ -15,6 +15,19 @@
 // Create the Vulkan device object
 // ***
 
+VkDeviceCreateInfo create_device_info(void) {
+    VkDeviceCreateInfo device_info = {};
+    device_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+    device_info.queueCreateInfoCount = 0;  // Can be updated with queue info later
+    device_info.pQueueCreateInfos = NULL;
+    device_info.enabledExtensionCount = 0;  // No device extensions by default
+    device_info.ppEnabledExtensionNames = NULL;
+    device_info.enabledLayerCount = 0;  // No validation layers by default
+    device_info.ppEnabledLayerNames = NULL;
+    device_info.pEnabledFeatures = NULL;  // Leave this as NULL until specific features are needed
+    return device_info;
+}
+
 struct VkDeviceQueueCreateInfo create_device_queue_info(void) {
     static float queuePriority = 1.0f; // Default priority
     struct VkDeviceQueueCreateInfo queueCreateInfo = {};
