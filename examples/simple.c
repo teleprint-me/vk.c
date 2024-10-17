@@ -42,8 +42,19 @@ int main(void) {
     // Select the compute queue family
     uint32_t computeQueueFamilyIndex = get_physical_device_queue_family(queueFamilyProperties, queueFamilyCount);
 
-    // Create a device (placeholder)
-    struct VkDevice_T* vkDevice = create_vk_device(physicalDevice, queueFamilyIndex);
+    // Create a logical device
+    struct VkDevice_T* logicalDevice;  // Logical device handle
+    enum VkResult result = vkCreateDevice(
+        selectedPhysicalDevice, &deviceInfo, NULL, &logicalDevice
+    );
+
+    if (VK_SUCCESS != result) {
+        fprintf(stderr, "Failed to create logical device! (Error code: %d)\n", result);
+        exit(EXIT_FAILURE);
+    }
+
+    // Clean up logical device
+    vkDestroyDevice(logicalDevice, NULL);
 
     // Clean up queue properties
     destroy_queue_family_properties(queueFamilyProperties);
@@ -53,8 +64,6 @@ int main(void) {
 
     // Clean up Vulkan instance
     destroy_vulkan_instance(vkInstance);
-
-    // vkDestroyDevice(vkDevice, NULL); // Once device creation is implemented
 
     return 0;
 }
