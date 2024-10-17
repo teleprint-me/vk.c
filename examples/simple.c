@@ -16,7 +16,7 @@
 // ***
 
 VkDeviceCreateInfo create_device_info(void) {
-    VkDeviceCreateInfo device_info = {};
+    struct VkDeviceCreateInfo device_info = {};
     device_info.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     device_info.queueCreateInfoCount = 0;  // Can be updated with queue info later
     device_info.pQueueCreateInfos = NULL;
