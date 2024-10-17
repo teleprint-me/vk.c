@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
 
-mkdir -p build/examples
+rm -rf build
 cmake -B build -DCMAKE_BUILD_TYPE=Debug 
 cmake --build build --config Debug -j "$(nproc)"
