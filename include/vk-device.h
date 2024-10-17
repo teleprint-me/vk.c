@@ -14,8 +14,6 @@
 
 #include "vk-instance.h"
 
-#include <vulkan/vulkan.h>
-
 // Alias for struct VkDevice_T* to distinguish logical devices
 typedef struct VkDevice_T* VkLogicalDevice;
 
@@ -33,10 +31,13 @@ typedef struct VulkanDevice {
 
 // Functions for initializing and managing devices
 
+struct VkDeviceCreateInfo create_device_info(void);
+struct VkDeviceQueueCreateInfo create_device_queue_info(void);
+
 /**
  * @brief Initializes the Vulkan device and selects the best available physical device.
  * 
- * @param vkInstance A Vulkan instance handle.
+ * @param vkInstance A pointer to a vulkan_instance_t structure.
  * @return A pointer to the created vulkan_device_t structure.
  */
 vulkan_device_t* create_vulkan_device(vulkan_instance_t* vkInstance);
