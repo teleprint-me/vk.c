@@ -5,7 +5,7 @@
  *
  * @brief Vulkan Device API for managing Vulkan instances and devices.
  *
- * @note This API handles physical and logical device management, queue setup, 
+ * @note This API handles physical and logical device management, queue setup,
  *       and other device-related operations.
  */
 
@@ -33,25 +33,30 @@ typedef struct VulkanDevice {
 
 struct VkDeviceCreateInfo create_device_info(void);
 struct VkDeviceQueueCreateInfo create_device_queue_info(void);
+uint32_t get_physical_device_count(struct VkInstance_T* pVkInstance);
+struct VkPhysicalDevice_T** create_physical_devices(struct VkInstance_T* pVkInstance, uint32_t deviceCount);
+void destroy_physical_devices(struct VkPhysicalDevice_T** pPhysicalDevices);
 
 /**
- * @brief Initializes the Vulkan device and selects the best available physical device.
- * 
+ * @brief Initializes the Vulkan device and selects the best available physical
+ * device.
+ *
  * @param vkInstance A pointer to a vulkan_instance_t structure.
  * @return A pointer to the created vulkan_device_t structure.
  */
 vulkan_device_t* create_vulkan_device(vulkan_instance_t* vkInstance);
 
 /**
- * @brief Cleans up and destroys the Vulkan device, including logical and physical devices.
- * 
+ * @brief Cleans up and destroys the Vulkan device, including logical and
+ * physical devices.
+ *
  * @param vkDevice A pointer to the vulkan_device_t structure to destroy.
  */
 void destroy_vulkan_device(vulkan_device_t* vkDevice);
 
 /**
  * @brief Creates a queue for the logical device.
- * 
+ *
  * @param vkDevice A pointer to the vulkan_device_t structure.
  * @param queueFamilyIndex Index of the queue family to create.
  */
