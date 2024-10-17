@@ -45,9 +45,9 @@ struct VkDeviceQueueCreateInfo create_device_queue_info(void) {
     return deviceQueueInfo;
 }
 
-uint32_t get_physical_device_count(struct VkInstance_T* pVkInstance) {
+uint32_t get_physical_device_count(struct VkInstance_T* vkInstance) {
     uint32_t deviceCount = 0;
-    enum VkResult result = vkEnumeratePhysicalDevices(pVkInstance, &deviceCount, NULL);
+    enum VkResult result = vkEnumeratePhysicalDevices(vkInstance, &deviceCount, NULL);
 
     if (VK_SUCCESS != result) {
         fprintf(stderr, "Failed to enumerate physical devices! (Error code: %d)\n", result);
@@ -63,48 +63,48 @@ uint32_t get_physical_device_count(struct VkInstance_T* pVkInstance) {
 }
 
 struct VkPhysicalDevice_T** create_physical_devices(
-    struct VkInstance_T* pVkInstance, uint32_t deviceCount
+    struct VkInstance_T* vkInstance, uint32_t deviceCount
 ) {
-    struct VkPhysicalDevice_T** pPhysicalDevices = (struct VkPhysicalDevice_T**)
+    struct VkPhysicalDevice_T** physicalDevices = (struct VkPhysicalDevice_T**)
         malloc(deviceCount * sizeof(struct VkPhysicalDevice_T*));
 
-    if (VK_SUCCESS != vkEnumeratePhysicalDevices(pVkInstance, &deviceCount, pPhysicalDevices)) {
+    if (VK_SUCCESS != vkEnumeratePhysicalDevices(vkInstance, &deviceCount, physicalDevices)) {
         fprintf(stderr, "Failed to enumerate physical devices!\n");
-        free(pPhysicalDevices);  // Clean up on failure
+        free(physicalDevices);  // Clean up on failure
         return NULL;
     }
 
-    return pPhysicalDevices;  // Return the list of devices
+    return physicalDevices;  // Return the list of devices
 }
 
-void destroy_physical_devices(struct VkPhysicalDevice_T** pPhysicalDevices) {
-    if (pPhysicalDevices) {
-        free(pPhysicalDevices);
+void destroy_physical_devices(struct VkPhysicalDevice_T** physicalDevices) {
+    if (physicalDevices) {
+        free(physicalDevices);
     }
 }
 
 struct VkPhysicalDeviceProperties get_physical_device_properties(
-    struct VkPhysicalDevice_T* pPhysicalDevice, uint32_t deviceCount
+    struct VkPhysicalDevice_T* selectedPhysicalDevice, uint32_t deviceCount
 ) {
-    struct VkPhysicalDeviceProperties deviceProperties;
-    vkGetPhysicalDeviceProperties(pPhysicalDevice, &deviceProperties);
-    return deviceProperties;
+    struct VkPhysicalDeviceProperties physicalDeviceProperties;
+    vkGetPhysicalDeviceProperties(selectedPhysicalDevice, &physicalDeviceProperties);
+    return physicalDeviceProperties;
 }
 
 // attempt to guess which device should be returned
 struct VkPhysicalDevice_T* select_physical_device(
-    struct VkPhysicalDevice_T** pPhysicalDevices, uint32_t deviceCount
+    struct VkPhysicalDevice_T** physicalDevices, uint32_t deviceCount
 ) {
     for (uint32_t i = 0; i < deviceCount; i++) {
         struct VkPhysicalDeviceProperties deviceProperties = get_physical_device_properties(
-            pPhysicalDevices[i], deviceCount
+            physicalDevices[i], deviceCount
         );
         // If device supports compute (discrete GPU preferred)
         if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
-            return pPhysicalDevices[i];
+            return physicalDevices[i];
         }
     }
 
     // Fallback to first available device
-    return pPhysicalDevices[0];
+    return physicalDevices[0];
 }

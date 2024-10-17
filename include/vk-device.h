@@ -32,10 +32,22 @@ typedef struct VulkanDevice {
 // Functions for initializing and managing devices
 
 struct VkDeviceCreateInfo create_device_info(void);
+
 struct VkDeviceQueueCreateInfo create_device_queue_info(void);
-uint32_t get_physical_device_count(struct VkInstance_T* pVkInstance);
-struct VkPhysicalDevice_T** create_physical_devices(struct VkInstance_T* pVkInstance, uint32_t deviceCount);
-void destroy_physical_devices(struct VkPhysicalDevice_T** pPhysicalDevices);
+
+uint32_t get_physical_device_count(struct VkInstance_T* vkInstance);
+
+struct VkPhysicalDevice_T** create_physical_devices(struct VkInstance_T* vkInstance, uint32_t deviceCount);
+
+void destroy_physical_devices(struct VkPhysicalDevice_T** physicalDevices);
+
+struct VkPhysicalDeviceProperties get_physical_device_properties(
+    struct VkPhysicalDevice_T* selectedPhysicalDevice, uint32_t deviceCount
+);
+
+struct VkPhysicalDevice_T* select_physical_device(
+    struct VkPhysicalDevice_T** physicalDevices, uint32_t deviceCount
+);
 
 /**
  * @brief Initializes the Vulkan device and selects the best available physical
