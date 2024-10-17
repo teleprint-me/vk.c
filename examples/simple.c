@@ -16,30 +16,6 @@
 // Create the Vulkan device object
 // ***
 
-struct VkPhysicalDeviceProperties get_physical_device_properties(struct VkPhysicalDevice_T* pPhysicalDevice, uint32_t deviceCount) {
-    struct VkPhysicalDeviceProperties deviceProperties;
-    vkGetPhysicalDeviceProperties(pPhysicalDevice, &deviceProperties);
-    return deviceProperties;
-}
-
-// attempt to guess which device should be returned
-struct VkPhysicalDevice_T * get_physical_device(
-    struct VkInstance_T* pVkInstance, struct VkPhysicalDevice_T* pPhysicalDevices, uint32_t deviceCount
-) {
-    for (uint32_t i = 0; i < deviceCount; i++) {
-        VkPhysicalDeviceProperties deviceProperties = get_physical_device_properties(
-            (&pPhysicalDevices)[i], deviceCount
-        );
-        // If device supports compute (discrete GPU preferred)
-        if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
-            return (&pPhysicalDevices)[i];
-        }
-    }
-
-    // Fallback to first available device
-    return (&pPhysicalDevices)[0];
-}
-
 uint32_t get_physical_device_queue_family_count(struct VkPhysicalDevice_T* pVkPhysicalDevice) {
     uint32_t queueFamilyCount = 0;
     vkGetPhysicalDeviceQueueFamilyProperties(pVkPhysicalDevice, &queueFamilyCount, NULL);
@@ -80,7 +56,7 @@ int main(void) {
     // Create Vulkan instance
     vulkan_instance_t* vkInstance = create_vulkan_instance("SimpleApp", "SimpleEngine");
 
-    // Create device related info objects
+    // Create device-related info objects
     struct VkDeviceCreateInfo deviceInfo = create_device_info();
     struct VkDeviceQueueCreateInfo deviceQueueInfo = create_device_queue_info();
 
@@ -88,14 +64,16 @@ int main(void) {
     uint32_t deviceCount = get_physical_device_count(vkInstance->handle);
 
     // Enumerate and create physical devices
-    struct VkPhysicalDevice_T** pPhysicalDevices = create_physical_devices(vkInstance->handle, deviceCount);
+    struct VkPhysicalDevice_T** physicalDevices = create_physical_devices(vkInstance->handle, deviceCount);
 
-    // Here, you can select the best physical device (e.g., preferring discrete GPUs)
-    struct VkPhysicalDevice_T* selectedPhysicalDevice = pPhysicalDevices[0]; // Placeholder for now
+    // Select the best physical device
+    struct VkPhysicalDevice_T* selectedPhysicalDevice = select_physical_device(physicalDevices, deviceCount);
+
+    // Get properties for the selected physical device
+    struct VkPhysicalDeviceProperties physicalDeviceProperties = get_physical_device_properties(selectedPhysicalDevice, deviceCount);
 
     // Pick the best physical device (discrete GPU preferred)
-    struct VkPhysicalDevice_T* physicalDevice = get_physical_device(vkInstance->handle, pPhysicalDevices, deviceCount);
-    uint32_t queueFamilyCount = get_physical_device_queue_family_count(physicalDevice);
+    uint32_t queueFamilyCount = get_physical_device_queue_family_count(pPhysicalDevice);
     uint32_t queueFamilyIndex = get_physical_device_queue_family(physicalDevice, queueFamilyCount);
 
     // Create a device (placeholder)
