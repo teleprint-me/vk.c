@@ -37,16 +37,38 @@ struct VkDeviceQueueCreateInfo create_device_queue_info(void);
 
 uint32_t get_physical_device_count(struct VkInstance_T* vkInstance);
 
-struct VkPhysicalDevice_T** create_physical_devices(struct VkInstance_T* vkInstance, uint32_t deviceCount);
+struct VkPhysicalDevice_T** create_physical_devices(
+    struct VkInstance_T* vkInstance, uint32_t deviceCount
+);
 
 void destroy_physical_devices(struct VkPhysicalDevice_T** physicalDevices);
 
 struct VkPhysicalDeviceProperties get_physical_device_properties(
-    struct VkPhysicalDevice_T* selectedPhysicalDevice, uint32_t deviceCount
+    struct VkPhysicalDevice_T* selectedPhysicalDevice,
+    uint32_t deviceCount
 );
 
 struct VkPhysicalDevice_T* select_physical_device(
-    struct VkPhysicalDevice_T** physicalDevices, uint32_t deviceCount
+    struct VkPhysicalDevice_T** physicalDevices,
+    uint32_t deviceCount
+);
+
+uint32_t get_physical_device_queue_family_count(
+    struct VkPhysicalDevice_T* selectedPhysicalDevice
+);
+
+struct VkQueueFamilyProperties* create_queue_family_properties(
+    struct VkPhysicalDevice_T* selectedPhysicalDevice,
+    uint32_t queueFamilyPropertyCount
+);
+
+void destroy_queue_family_properties(
+    struct VkQueueFamilyProperties* queueFamilyProperties
+);
+
+uint32_t get_physical_device_queue_family(
+    struct VkQueueFamilyProperties* queueFamilyProperties,
+    uint32_t queueFamilyPropertyCount
 );
 
 /**
