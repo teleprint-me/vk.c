@@ -46,34 +46,36 @@ struct VkDeviceQueueCreateInfo create_device_queue_info(void) {
 }
 
 uint32_t get_physical_device_count(struct VkInstance_T* pVkInstance) {
-    uint32_t physicalDeviceCount = 0;
-    enum VkResult result
-        = vkEnumeratePhysicalDevices(pVkInstance, &physicalDeviceCount, NULL);
+    uint32_t deviceCount = 0;
+    enum VkResult result = vkEnumeratePhysicalDevices(pVkInstance, &deviceCount, NULL);
+
     if (VK_SUCCESS != result) {
-        fprintf(
-            stderr,
-            "Failed to enumerate physical devices with Vulkan! (Error code: %d)\n",
-            result
-        );
+        fprintf(stderr, "Failed to enumerate physical devices! (Error code: %d)\n", result);
         exit(EXIT_FAILURE);
     }
-    if (0 == physicalDeviceCount) {
-        fprintf(stderr, "Failed to find GPUs with Vulkan support!\n");
+
+    if (0 == deviceCount) {
+        fprintf(stderr, "No GPUs with Vulkan support found!\n");
         exit(EXIT_FAILURE);
     }
-    return physicalDeviceCount;
+
+    return deviceCount;
 }
 
-struct VkPhysicalDevice_T* create_physical_devices(
-    struct VkInstance_T* pVkInstance, uint32_t deviceCount
-) {
-    struct VkPhysicalDevice_T** pPhysicalDevices = (struct VkPhysicalDevice_T*)
+struct VkPhysicalDevice_T** create_physical_devices(struct VkInstance_T* pVkInstance, uint32_t deviceCount) {
+    struct VkPhysicalDevice_T** pPhysicalDevices = (struct VkPhysicalDevice_T**)
         malloc(deviceCount * sizeof(struct VkPhysicalDevice_T*));
-    vkEnumeratePhysicalDevices(pVkInstance, &deviceCount, pPhysicalDevices);
-    return pPhysicalDevices;
+
+    if (VK_SUCCESS != vkEnumeratePhysicalDevices(pVkInstance, &deviceCount, pPhysicalDevices)) {
+        fprintf(stderr, "Failed to enumerate physical devices!\n");
+        free(pPhysicalDevices);  // Clean up on failure
+        return NULL;
+    }
+
+    return pPhysicalDevices;  // Return the list of devices
 }
 
-void destroy_physical_devices(struct VkPhysicalDevice_T* pPhysicalDevices) {
+void destroy_physical_devices(struct VkPhysicalDevice_T** pPhysicalDevices) {
     if (pPhysicalDevices) {
         free(pPhysicalDevices);
     }
