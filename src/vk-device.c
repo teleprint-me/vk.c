@@ -108,3 +108,46 @@ struct VkPhysicalDevice_T* select_physical_device(
     // Fallback to first available device
     return physicalDevices[0];
 }
+
+uint32_t get_physical_device_queue_family_count(
+    struct VkPhysicalDevice_T* selectedPhysicalDevice
+) {
+    uint32_t queueFamilyPropertyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(
+        selectedPhysicalDevice, &queueFamilyPropertyCount, NULL
+    );
+    return queueFamilyPropertyCount;
+}
+
+struct VkQueueFamilyProperties* create_queue_family_properties(
+    struct VkPhysicalDevice_T* selectedPhysicalDevice, uint32_t queueFamilyPropertyCount
+) {
+    struct VkQueueFamilyProperties* queueFamilyProperties = malloc(
+        queueFamilyPropertyCount * sizeof(struct VkQueueFamilyProperties)
+    );
+    vkGetPhysicalDeviceQueueFamilyProperties(
+        selectedPhysicalDevice, &queueFamilyPropertyCount, queueFamilyProperties
+    );
+    return queueFamilyProperties;
+}
+
+void destroy_queue_family_properties(
+    struct VkQueueFamilyProperties* queueFamilyProperties
+) {
+    if (queueFamilyProperties) {
+        free(queueFamilyProperties);
+    }
+}
+
+uint32_t get_physical_device_queue_family(
+    struct VkQueueFamilyProperties* queueFamilyProperties, uint32_t queueFamilyPropertyCount
+) {
+    for (uint32_t i = 0; i < queueFamilyPropertyCount; i++) {
+        if (queueFamilyProperties[i].queueFlags & VK_QUEUE_COMPUTE_BIT) {
+            return i; // Found a queue that supports compute operations
+        }
+    }
+
+    // Fallback to first available queue family
+    return 0;
+}
