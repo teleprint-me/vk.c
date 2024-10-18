@@ -47,20 +47,20 @@ int main(void) {
     );
 
     // Create a logical device with the selected queue family index
-    struct VkDeviceQueueCreateInfo deviceQueueInfo = create_device_queue_info();
+    struct VkDeviceQueueCreateInfo* deviceQueueInfo = create_device_queue_info();
     // Set the correct queue family index
-    deviceQueueInfo.queueFamilyIndex = deviceQueueFamilyIndex;
+    deviceQueueInfo->queueFamilyIndex = deviceQueueFamilyIndex;
 
     // Now, create a logical device
     struct VkDevice_T* logicalDevice;  // Logical device handle
-    struct VkDeviceCreateInfo deviceInfo = create_device_info();
+    struct VkDeviceCreateInfo* deviceInfo = create_device_info();
     // We're setting up 1 queue for now
-    deviceInfo.queueCreateInfoCount = 1;
+    deviceInfo->queueCreateInfoCount = 1;
     // Pass the queue create info
-    deviceInfo.pQueueCreateInfos = &deviceQueueInfo;
+    deviceInfo->pQueueCreateInfos = deviceQueueInfo;
 
     enum VkResult result = vkCreateDevice(
-        selectedPhysicalDevice, &deviceInfo, NULL, &logicalDevice
+        selectedPhysicalDevice, deviceInfo, NULL, &logicalDevice
     );
 
     if (VK_SUCCESS != result) {
@@ -69,8 +69,8 @@ int main(void) {
     }
 
     // Retrieve the queue for compute operations
-    struct VkQueue_T* computeQueue;
-    vkGetDeviceQueue(logicalDevice, deviceQueueFamilyIndex, 0, &computeQueue);
+    struct VkQueue_T* logicalQueue;
+    vkGetDeviceQueue(logicalDevice, deviceQueueFamilyIndex, 0, &logicalQueue);
 
     // Clean up logical device
     vkDestroyDevice(logicalDevice, NULL);
