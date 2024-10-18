@@ -69,12 +69,6 @@ struct VkPhysicalDevice_T* select_physical_device(
     uint32_t deviceCount
 );
 
-// @brief Creates a logical device from the selected physical device.
-struct VkDevice_T* get_logical_device(
-    struct VkPhysicalDevice_T* selectedPhysicalDevice,
-    struct VkDeviceCreateInfo* deviceInfo
-);
-
 // @brief Initializes the VulkanDevice structure.
 vulkan_device_t* create_vulkan_device(vulkan_instance_t* vkInstance);
 
