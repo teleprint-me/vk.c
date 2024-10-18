@@ -32,7 +32,7 @@ chmod +x compile.sh
 Can use -Debug or -Release:
 
 ```sh
-./compile.sh -Release # Defaults to -Debug
+./compile.sh Release # Defaults to Debug
 ```
 
 ## References
