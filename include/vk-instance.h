@@ -36,6 +36,6 @@ void set_instance_info_validation_layers(struct VkInstanceCreateInfo* pInstanceI
 vulkan_instance_t* create_vulkan_instance(char* pApplicationName, char* pEngineName);
 
 // Destroy an existing vulkan instance object and free associated objects from memory
-void destroy_vulkan_instance(vulkan_instance_t* vkInstance);
+void destroy_vulkan_instance(vulkan_instance_t* instance);
 
 #endif // VK_INSTANCE

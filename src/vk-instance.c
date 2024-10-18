@@ -47,27 +47,27 @@ void set_instance_info_validation_layers(struct VkInstanceCreateInfo* pInstanceI
 }
 
 vulkan_instance_t* create_vulkan_instance(char* pApplicationName, char* pEngineName) {
-    vulkan_instance_t* vkInstance = (vulkan_instance_t*) malloc(sizeof(vulkan_instance_t));
+    vulkan_instance_t* instance = (vulkan_instance_t*) malloc(sizeof(vulkan_instance_t));
 
-    vkInstance->applicationInfo = create_vk_application_info(pApplicationName, pEngineName);
-    vkInstance->instanceCreateInfo = create_vk_instance_info(vkInstance->applicationInfo);
+    instance->applicationInfo = create_vk_application_info(pApplicationName, pEngineName);
+    instance->instanceCreateInfo = create_vk_instance_info(instance->applicationInfo);
 
-    VkResult result = vkCreateInstance(vkInstance->instanceCreateInfo, NULL, &vkInstance->handle);
+    VkResult result = vkCreateInstance(instance->instanceCreateInfo, NULL, &instance->handle);
     if (VK_SUCCESS != result) {
         fprintf(stderr, "Failed to create Vulkan instance! (Error code: %d)\n", result);
         exit(EXIT_FAILURE);
     }
 
-    return vkInstance;
+    return instance;
 }
 
-void destroy_vulkan_instance(vulkan_instance_t* vkInstance) {
-    if (vkInstance) {
-        if (vkInstance->handle) {
-            vkDestroyInstance(vkInstance->handle, NULL); // Vulkan instance cleanup
+void destroy_vulkan_instance(vulkan_instance_t* instance) {
+    if (instance) {
+        if (instance->handle) {
+            vkDestroyInstance(instance->handle, NULL); // Vulkan instance cleanup
         }
-        free(vkInstance->applicationInfo); // Free application info
-        free(vkInstance->instanceCreateInfo); // Free instance info
-        free(vkInstance); // Finally, free the vkInstance itself
+        free(instance->applicationInfo); // Free application info
+        free(instance->instanceCreateInfo); // Free instance info
+        free(instance); // Finally, free the instance itself
     }
 }
