@@ -42,8 +42,7 @@ struct VkPhysicalDevice_T** enumerate_physical_devices(
 void free_physical_device_handles(struct VkPhysicalDevice_T** physicalDevices);
 
 struct VkPhysicalDeviceProperties get_physical_device_properties(
-    struct VkPhysicalDevice_T* selectedPhysicalDevice,
-    uint32_t deviceCount
+    struct VkPhysicalDevice_T* selectedPhysicalDevice
 );
 
 struct VkPhysicalDevice_T* select_physical_device(
@@ -67,6 +66,11 @@ void free_queue_family_properties(
 uint32_t get_compute_queue_family_index(
     struct VkQueueFamilyProperties* queueFamilyProperties,
     uint32_t queueFamilyPropertyCount
+);
+
+struct VkDevice_T* get_logical_device(
+    struct VkPhysicalDevice_T* selectedPhysicalDevice,
+    struct VkDeviceCreateInfo* deviceInfo
 );
 
 struct VkQueue_T* get_device_queue(
