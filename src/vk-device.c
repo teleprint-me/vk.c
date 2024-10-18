@@ -234,8 +234,7 @@ vulkan_device_t* create_vulkan_device(vulkan_instance_t* vkInstance) {
     vkDevice->physicalCount = enumerate_physical_device_count(vkInstance->handle);
     vkDevice->list = enumerate_physical_devices(vkInstance->handle, vkDevice->physicalCount);
     vkDevice->physical = select_physical_device(vkDevice->list, vkDevice->physicalCount);
-
-    // Create the logical device (not fully shown here for brevity)
+    vkDevice->properties = get_physical_device_properties(vkDevice->physical);
     vkDevice->deviceInfo = create_device_info();
     vkDevice->logical = get_logical_device(vkDevice->physical, vkDevice->deviceInfo);
 
@@ -244,7 +243,10 @@ vulkan_device_t* create_vulkan_device(vulkan_instance_t* vkInstance) {
 
 void destroy_vulkan_device(vulkan_device_t* vkDevice) {
     // Memory cleanup
-    free_physical_device_handles(vkDevice->list);
-
-    // @todo
+    if (vkDevice) {
+        if (vkDevice->list) {
+            free_physical_device_handles(vkDevice->list);
+        }
+        vkDestroyDevice(vkDevice->logical, NULL);
+    }
 }
