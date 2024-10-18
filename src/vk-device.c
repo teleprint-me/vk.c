@@ -157,13 +157,13 @@ void free_queue_family_properties(
     }
 }
 
-vulkan_queue_t* create_vulkan_queue(struct VkPhysicalDevice_T* selectedPhysicalDevice) {
-    vulkan_queue_t* queue = (vulkan_queue_t*) malloc(sizeof(vulkan_queue_t));
+vulkan_queue_t* create_vulkan_queue(vulkan_device_t* vkDevice) {
+    vulkan_queue_t* vkQueue = (vulkan_queue_t*) malloc(sizeof(vulkan_queue_t));
 
-    queue->deviceQueueInfo = create_device_queue_info();
-    queue->queueFamilyPropertyCount = get_queue_family_property_count(selectedPhysicalDevice);
+    vkQueue->deviceQueueInfo = create_device_queue_info();
+    vkQueue->queueFamilyPropertyCount = get_queue_family_property_count(vkDevice->physical);
 
-    return queue;
+    return vkQueue;
 }
 
 uint32_t get_compute_queue_family_index(
@@ -190,61 +190,68 @@ struct VkQueue_T* get_logical_device_queue(
 }
 
 /**
- * Create and destroy Vulkan Queue
+ * @brief Create and destroy Vulkan Queue
  */
 
-vulkan_queue_t* create_vulkan_queue(struct VkPhysicalDevice_T* selectedPhysicalDevice) {
-    vulkan_queue_t* queue = (vulkan_queue_t*) malloc(sizeof(vulkan_queue_t));
-    queue->deviceQueueInfo = create_device_queue_info();
-    queue->queueFamilyPropertyCount = get_queue_family_property_count(selectedPhysicalDevice);
-    queue->queueFamilyProperties = get_queue_family_properties(selectedPhysicalDevice, queue->queueFamilyPropertyCount);
+vulkan_queue_t* create_vulkan_queue(vulkan_device_t* vkDevice) {
+    vulkan_queue_t* vkQueue = (vulkan_queue_t*) malloc(sizeof(vulkan_queue_t));
 
+    // Create and set queue creation info
+    vkQueue->deviceQueueInfo = create_device_queue_info();
+
+    // Get queue family property count and properties
+    vkQueue->queueFamilyPropertyCount = get_queue_family_property_count(vkDevice->physical);
+    vkQueue->queueFamilyProperties = get_queue_family_properties(vkDevice->physical, vkQueue->queueFamilyPropertyCount);
+
+    // Find the compute-capable queue family index
+    vkQueue->queueFamilyIndex = get_compute_queue_family_index(vkQueue->queueFamilyProperties, vkQueue->queueFamilyPropertyCount);
+
+    // Set the queue family index in the device queue info
+    vkQueue->deviceQueueInfo->queueFamilyIndex = vkQueue->queueFamilyIndex;
+
+    // Retrieve the Vulkan queue handle from the logical device
+    vkGetDeviceQueue(vkDevice->logical, vkQueue->queueFamilyIndex, 0, &vkQueue->handle);
+
+    return vkQueue;
 }
 
 void destroy_vulkan_queue(vulkan_queue_t* vkQueue) {
-    // @todo
+    if (vkQueue) {
+        // Free queue family properties if allocated
+        if (vkQueue->queueFamilyProperties) {
+            free_queue_family_properties(vkQueue->queueFamilyProperties);
+        }
+        // Free the device queue info
+        if (vkQueue->deviceQueueInfo) {
+            free(vkQueue->deviceQueueInfo);
+        }
+        // Finally, free the queue structure itself
+        free(vkQueue);
+    }
 }
 
 /**
- * Create and destroy Vulkan Device
+ * @brief Create and destroy Vulkan Device
  */
 
 vulkan_device_t* create_vulkan_device(vulkan_instance_t* vkInstance) {
-    vulkan_device_t* device = (vulkan_device_t*) malloc(sizeof(vulkan_device_t));
-
-    // Get the physical device count
-    device->physicalCount = get_physical_device_count(vkInstance->handle);
-
-    // Allocate and enumerate physical devices (you might already have a function for this)
-    VkPhysicalDevice* physicalDevices = enumerate_physical_devices(
-        vkInstance->handle, device->physicalCount
-    );
-
-    // Select the best physical device (if you have multiple, you can pick the most suitable)
-    device->physical = select_physical_device(physicalDevices, device->physicalCount);
-
-    // Get the queue family index for compute operations
-    uint32_t queueFamilyIndex = get_compute_queue_family_index(
-        get_queue_family_properties(device->physical, get_queue_family_property_count(device->physical)),
-        get_queue_family_property_count(device->physical)
-    );
-
-    // Create and set up device queue info
-    struct VkDeviceCreateInfo* deviceInfo = create_device_info();
-    struct VkDeviceQueueCreateInfo* deviceQueueInfo = create_device_queue_info();
-
-    // Set the queue family index in the queue creation info
-    deviceQueueInfo->queueFamilyIndex = queueFamilyIndex;
+    vulkan_device_t* vkDevice = (vulkan_device_t*) malloc(sizeof(vulkan_device_t));
     
-    // Update device creation info with the queue information
-    deviceInfo->queueCreateInfoCount = 1;
-    deviceInfo->pQueueCreateInfos = deviceQueueInfo;
+    // Get the physical device count and select the best physical device
+    vkDevice->physicalCount = enumerate_physical_device_count(vkInstance->handle);
+    vkDevice->list = enumerate_physical_devices(vkInstance->handle, vkDevice->physicalCount);
+    vkDevice->physical = select_physical_device(vkDevice->list, vkDevice->physicalCount);
 
-    // Final device setup steps, such as logical device creation...
+    // Create the logical device (not fully shown here for brevity)
+    vkDevice->deviceInfo = create_device_info();
+    vkDevice->logical = get_logical_device(vkDevice->physical, vkDevice->deviceInfo);
 
-    return device;
+    return vkDevice;
 }
 
-void destroy_vulkan_device(vulkan_device_t* device) {
+void destroy_vulkan_device(vulkan_device_t* vkDevice) {
+    // Memory cleanup
+    free_physical_device_handles(vkDevice->list);
+
     // @todo
 }
