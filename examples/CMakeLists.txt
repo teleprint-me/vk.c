@@ -1,7 +1,8 @@
 # Vulkan Compute examples/CMakeLists.txt
 
 # Add compute related examples
-set(EXAMPLES 
+set(EXAMPLES
+    instance
     simple
 )
 
