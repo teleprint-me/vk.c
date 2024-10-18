@@ -19,7 +19,9 @@
  */
 
 struct VkDeviceCreateInfo* create_device_info(void) {
-    struct VkDeviceCreateInfo* deviceInfo = (struct VkDeviceCreateInfo*) malloc(sizeof(struct VkDeviceCreateInfo));
+    struct VkDeviceCreateInfo* deviceInfo = (struct VkDeviceCreateInfo*) malloc(
+        sizeof(struct VkDeviceCreateInfo)
+    );
     deviceInfo->sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
     deviceInfo->queueCreateInfoCount = 0;
     deviceInfo->pQueueCreateInfos = NULL;
@@ -51,16 +53,17 @@ uint32_t enumerate_physical_device_count(struct VkInstance_T* vkInstance) {
 struct VkPhysicalDevice_T** enumerate_physical_devices(
     struct VkInstance_T* vkInstance, uint32_t deviceCount
 ) {
-    struct VkPhysicalDevice_T** physicalDevices = (struct VkPhysicalDevice_T**)
-        malloc(deviceCount * sizeof(struct VkPhysicalDevice_T*));
+    struct VkPhysicalDevice_T** physicalDeviceList = (struct VkPhysicalDevice_T**) malloc(
+            deviceCount * sizeof(struct VkPhysicalDevice_T*)
+    );
 
-    if (VK_SUCCESS != vkEnumeratePhysicalDevices(vkInstance, &deviceCount, physicalDevices)) {
+    if (VK_SUCCESS != vkEnumeratePhysicalDevices(vkInstance, &deviceCount, physicalDeviceList)) {
         fprintf(stderr, "Failed to enumerate physical devices!\n");
-        free(physicalDevices);  // Clean up on failure
+        free(physicalDeviceList);  // Clean up on failure
         return NULL;
     }
 
-    return physicalDevices;  // Return the list of devices
+    return physicalDeviceList;  // Return the list of devices
 }
 
 void free_physical_device_handles(struct VkPhysicalDevice_T** physicalDevices) {
@@ -118,7 +121,9 @@ struct VkDevice_T* get_logical_device(
 
 struct VkDeviceQueueCreateInfo* create_device_queue_info(void) {
     static float queuePriority = 1.0f;
-    struct VkDeviceQueueCreateInfo* deviceQueueInfo = (struct VkDeviceQueueCreateInfo*) malloc(sizeof(struct VkDeviceQueueCreateInfo));
+    struct VkDeviceQueueCreateInfo* deviceQueueInfo = (struct VkDeviceQueueCreateInfo*) malloc(
+        sizeof(struct VkDeviceQueueCreateInfo)
+    );
     deviceQueueInfo->sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
     deviceQueueInfo->queueFamilyIndex = 0;
     deviceQueueInfo->queueCount = 1;
