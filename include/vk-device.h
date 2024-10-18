@@ -33,13 +33,13 @@ struct VkDeviceCreateInfo* create_device_info(void);
 
 struct VkDeviceQueueCreateInfo* create_device_queue_info(void);
 
-uint32_t get_physical_device_count(struct VkInstance_T* vkInstance);
+uint32_t enumerate_physical_device_count(struct VkInstance_T* vkInstance);
 
-struct VkPhysicalDevice_T** get_physical_devices(
+struct VkPhysicalDevice_T** enumerate_physical_devices(
     struct VkInstance_T* vkInstance, uint32_t deviceCount
 );
 
-void free_physical_devices(struct VkPhysicalDevice_T** physicalDevices);
+void free_physical_device_handles(struct VkPhysicalDevice_T** physicalDevices);
 
 struct VkPhysicalDeviceProperties get_physical_device_properties(
     struct VkPhysicalDevice_T* selectedPhysicalDevice,
