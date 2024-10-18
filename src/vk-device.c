@@ -66,9 +66,9 @@ struct VkPhysicalDevice_T** enumerate_physical_devices(
     return physicalDeviceList;  // Return the list of devices
 }
 
-void free_physical_device_handles(struct VkPhysicalDevice_T** physicalDevices) {
-    if (physicalDevices) {
-        free(physicalDevices);
+void free_physical_device_handles(struct VkPhysicalDevice_T** physicalDeviceList) {
+    if (physicalDeviceList) {
+        free(physicalDeviceList);
     }
 }
 
@@ -82,19 +82,21 @@ struct VkPhysicalDeviceProperties* get_physical_device_properties(
 
 // attempt to guess which device should be returned
 struct VkPhysicalDevice_T* select_physical_device(
-    struct VkPhysicalDevice_T** physicalDevices,
-    uint32_t deviceCount
+    struct VkPhysicalDevice_T** physicalDeviceList, uint32_t deviceCount
 ) {
     for (uint32_t i = 0; i < deviceCount; i++) {
-        struct VkPhysicalDeviceProperties* deviceProperties = get_physical_device_properties(physicalDevices[i]);
+        struct VkPhysicalDeviceProperties* deviceProperties = get_physical_device_properties(
+            physicalDeviceList[i]
+        );
+
         // If device supports compute (discrete GPU preferred)
-        if (deviceProperties->deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
-            return physicalDevices[i];
+        if (VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU == deviceProperties->deviceType) {
+            return physicalDeviceList[i];
         }
     }
 
     // Fallback to first available device
-    return physicalDevices[0];
+    return physicalDeviceList[0];
 }
 
 struct VkDevice_T* get_logical_device(
