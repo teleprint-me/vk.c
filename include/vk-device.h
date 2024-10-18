@@ -24,6 +24,7 @@ typedef struct VkDevice_T* VkLogicalDevice;
 // @brief Structure representing a Vulkan device and related objects.
 typedef struct VulkanDevice {
     uint32_t physicalCount; ///< Number of physical devices available
+    VkPhysicalDevice* list;
     VkPhysicalDevice physical; ///< Selected physical device handle
     VkPhysicalDeviceType type; ///< Type of the selected physical device
     VkPhysicalDeviceProperties* properties; ///< Properties of the selected physical device
