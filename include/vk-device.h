@@ -18,17 +18,14 @@
  * @brief Custom Vulkan Device and Queue structures to centralize related information. 
  */
 
-// Alias for struct VkDevice_T* to distinguish logical devices
-typedef struct VkDevice_T* VkLogicalDevice;
-
 // @brief Structure representing a Vulkan device and related objects.
 typedef struct VulkanDevice {
     uint32_t physicalCount; ///< Number of physical devices available
-    VkPhysicalDevice* list;
+    VkPhysicalDevice* list; ///< List of physical devices
     VkPhysicalDevice physical; ///< Selected physical device handle
     VkPhysicalDeviceProperties* properties; ///< Properties of the selected physical device
-    VkDeviceCreateInfo* deviceInfo;
-    VkLogicalDevice logical; ///< Logical device handle
+    VkDeviceCreateInfo* deviceInfo; ///< Device creation info
+    VkDevice logical; ///< Logical device handle
 } vulkan_device_t;
 
 // @brief Structure representing a Vulkan queue and its properties.

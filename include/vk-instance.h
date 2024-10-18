@@ -13,11 +13,11 @@
 
 #include <vulkan/vulkan.h>
 
-// @note Expose pointers to mitigate "masked" pointers
+// @brief Structure representing a Vulkan instance and its creation parameters.
 typedef struct VulkanInstance {
-    struct VkApplicationInfo* applicationInfo; // Application-level info
-    struct VkInstanceCreateInfo* instanceCreateInfo; // Vulkan instance creation info
-    struct VkInstance_T* handle; // Actual Vulkan instance handle
+    VkApplicationInfo* applicationInfo; // Application-level info
+    VkInstanceCreateInfo* instanceCreateInfo; // Vulkan instance creation info
+    VkInstance handle; // Actual Vulkan instance handle
 } vulkan_instance_t;
 
 // Create a dynamic VkApplicationInfo instance object
