@@ -26,10 +26,9 @@ typedef struct VulkanDevice {
     uint32_t physicalCount; ///< Number of physical devices available
     VkPhysicalDevice* list;
     VkPhysicalDevice physical; ///< Selected physical device handle
-    VkPhysicalDeviceType type; ///< Type of the selected physical device
     VkPhysicalDeviceProperties* properties; ///< Properties of the selected physical device
-    VkLogicalDevice logical; ///< Logical device handle
     VkDeviceCreateInfo* deviceInfo;
+    VkLogicalDevice logical; ///< Logical device handle
 } vulkan_device_t;
 
 // @brief Structure representing a Vulkan queue and its properties.
@@ -57,7 +56,7 @@ struct VkPhysicalDevice_T** enumerate_physical_devices(
 );
 
 // @brief Frees the allocated physical device handles array.
-void free_physical_device_handles(struct VkPhysicalDevice_T** physicalDevices);
+void free_physical_device_handles(struct VkPhysicalDevice_T** physicalDeviceList);
 
 // @brief Retrieves properties of the selected physical device.
 struct VkPhysicalDeviceProperties* get_physical_device_properties(
@@ -66,7 +65,7 @@ struct VkPhysicalDeviceProperties* get_physical_device_properties(
 
 // @brief Selects an appropriate physical device from the available devices.
 struct VkPhysicalDevice_T* select_physical_device(
-    struct VkPhysicalDevice_T** physicalDevices,
+    struct VkPhysicalDevice_T** physicalDeviceList,
     uint32_t deviceCount
 );
 
