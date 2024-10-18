@@ -2,22 +2,29 @@
  * Copyright © 2024 Austin Berrio
  *
  * @file examples/instance.c
- * 
- * @brief Simple example showcasing how to create and destroy a custom vulkan instance object.
  */
 
 #include "vk-instance.h"
 
 #include <stdio.h>
+#include <stdlib.h>
 
+/**
+ * @brief Simple example showcasing how to create and destroy a custom VulkanInstance object.
+ */
 int main(void) {
     const char* appName = "InstanceApp";
     const char* engineName = "InstanceEngine";
+    
     vulkan_instance_t* vkInstance = create_vulkan_instance(appName, engineName);
-    printf("Successfully Created vulkan instance!\n");
+    if (NULL == vkInstance) {
+        fprintf(stderr, "Failed to create Vulkan instance.\n");
+        return EXIT_FAILURE;
+    }
+    printf("Successfully created Vulkan instance!\n");
 
     destroy_vulkan_instance(vkInstance);
-    printf("Successfully destroyed vulkan instance!\n");
+    printf("Successfully destroyed Vulkan instance!\n");
 
-    return 0;
+    return EXIT_SUCCESS;
 }
