@@ -37,7 +37,7 @@ struct VkDeviceQueueCreateInfo* create_device_queue_info(void) {
     return deviceQueueInfo;
 }
 
-uint32_t get_physical_device_count(struct VkInstance_T* vkInstance) {
+uint32_t enumerate_physical_device_count(struct VkInstance_T* vkInstance) {
     uint32_t deviceCount = 0;
     enum VkResult result = vkEnumeratePhysicalDevices(vkInstance, &deviceCount, NULL);
 
@@ -54,7 +54,7 @@ uint32_t get_physical_device_count(struct VkInstance_T* vkInstance) {
     return deviceCount;
 }
 
-struct VkPhysicalDevice_T** create_physical_devices(
+struct VkPhysicalDevice_T** enumerate_physical_devices(
     struct VkInstance_T* vkInstance, uint32_t deviceCount
 ) {
     struct VkPhysicalDevice_T** physicalDevices = (struct VkPhysicalDevice_T**)
@@ -69,14 +69,14 @@ struct VkPhysicalDevice_T** create_physical_devices(
     return physicalDevices;  // Return the list of devices
 }
 
-void destroy_physical_devices(struct VkPhysicalDevice_T** physicalDevices) {
+void free_physical_device_handles(struct VkPhysicalDevice_T** physicalDevices) {
     if (physicalDevices) {
         free(physicalDevices);
     }
 }
 
 struct VkPhysicalDeviceProperties get_physical_device_properties(
-    struct VkPhysicalDevice_T* selectedPhysicalDevice, uint32_t deviceCount
+    struct VkPhysicalDevice_T* selectedPhysicalDevice
 ) {
     struct VkPhysicalDeviceProperties physicalDeviceProperties;
     vkGetPhysicalDeviceProperties(selectedPhysicalDevice, &physicalDeviceProperties);
@@ -85,12 +85,11 @@ struct VkPhysicalDeviceProperties get_physical_device_properties(
 
 // attempt to guess which device should be returned
 struct VkPhysicalDevice_T* select_physical_device(
-    struct VkPhysicalDevice_T** physicalDevices, uint32_t deviceCount
+    struct VkPhysicalDevice_T** physicalDevices,
+    uint32_t deviceCount
 ) {
     for (uint32_t i = 0; i < deviceCount; i++) {
-        struct VkPhysicalDeviceProperties deviceProperties = get_physical_device_properties(
-            physicalDevices[i], deviceCount
-        );
+        struct VkPhysicalDeviceProperties deviceProperties = get_physical_device_properties(physicalDevices[i]);
         // If device supports compute (discrete GPU preferred)
         if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
             return physicalDevices[i];
@@ -101,7 +100,7 @@ struct VkPhysicalDevice_T* select_physical_device(
     return physicalDevices[0];
 }
 
-uint32_t get_physical_device_queue_family_count(
+uint32_t get_queue_family_property_count(
     struct VkPhysicalDevice_T* selectedPhysicalDevice
 ) {
     uint32_t queueFamilyPropertyCount = 0;
@@ -111,8 +110,9 @@ uint32_t get_physical_device_queue_family_count(
     return queueFamilyPropertyCount;
 }
 
-struct VkQueueFamilyProperties* create_queue_family_properties(
-    struct VkPhysicalDevice_T* selectedPhysicalDevice, uint32_t queueFamilyPropertyCount
+struct VkQueueFamilyProperties* get_queue_family_properties(
+    struct VkPhysicalDevice_T* selectedPhysicalDevice,
+    uint32_t queueFamilyPropertyCount
 ) {
     struct VkQueueFamilyProperties* queueFamilyProperties = malloc(
         queueFamilyPropertyCount * sizeof(struct VkQueueFamilyProperties)
@@ -123,7 +123,7 @@ struct VkQueueFamilyProperties* create_queue_family_properties(
     return queueFamilyProperties;
 }
 
-void destroy_queue_family_properties(
+void free_queue_family_properties(
     struct VkQueueFamilyProperties* queueFamilyProperties
 ) {
     if (queueFamilyProperties) {
@@ -131,8 +131,9 @@ void destroy_queue_family_properties(
     }
 }
 
-uint32_t get_physical_device_queue_family(
-    struct VkQueueFamilyProperties* queueFamilyProperties, uint32_t queueFamilyPropertyCount
+uint32_t get_compute_queue_family_index(
+    struct VkQueueFamilyProperties* queueFamilyProperties,
+    uint32_t queueFamilyPropertyCount
 ) {
     for (uint32_t i = 0; i < queueFamilyPropertyCount; i++) {
         if (queueFamilyProperties[i].queueFlags & VK_QUEUE_COMPUTE_BIT) {
@@ -144,7 +145,7 @@ uint32_t get_physical_device_queue_family(
     return 0;
 }
 
-struct VkDevice_T* create_logical_device(
+struct VkDevice_T* get_logical_device(
     struct VkPhysicalDevice_T* selectedPhysicalDevice,
     struct VkDeviceCreateInfo* deviceInfo
 ) {
@@ -163,14 +164,21 @@ struct VkDevice_T* create_logical_device(
 }
 
 struct VkQueue_T* get_logical_device_queue(
-    struct VkDevice_T* logicalDevice, uint32_t queueFamilyIndex
+    struct VkDevice_T* vkDevice, uint32_t queueFamilyIndex
 ) {
     // Retrieve the queue for compute operations
-    struct VkQueue_T* computeQueue;
-    vkGetDeviceQueue(logicalDevice, queueFamilyIndex, 0, &computeQueue);
-    return computeQueue;
+    struct VkQueue_T* queue;
+    vkGetDeviceQueue(vkDevice, queueFamilyIndex, 0, &queue);
+    return queue;
 }
 
-vulkan_device_t* create_vulkan_device(vulkan_instance_t* vkInstance) {}
+vulkan_device_t* create_vulkan_device(vulkan_instance_t* vkInstance) {
+    vulkan_device_t* device = (vulkan_device_t*) malloc(sizeof(vulkan_device_t));
+    // Get the physical device count
+    device->physicalCount = get_physical_device_count(vkInstance->handle);
 
-void destroy_vulkan_device(vulkan_device_t* vkDevice) {}
+}
+
+void destroy_vulkan_device(vulkan_device_t* vkDevice) {
+    // @todo
+}

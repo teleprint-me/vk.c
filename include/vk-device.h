@@ -73,7 +73,7 @@ struct VkDevice_T* get_logical_device(
     struct VkDeviceCreateInfo* deviceInfo
 );
 
-struct VkQueue_T* get_device_queue(
+struct VkQueue_T* get_logical_device_queue(
     struct VkDevice_T* vkDevice, uint32_t queueFamilyIndex
 );
 
