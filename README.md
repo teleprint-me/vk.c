@@ -7,6 +7,34 @@ A vulkan wrapper designed to simplify compute operations in pure C.
 sudo pacman -S gcc gdb cmake doxygen
 ```
 
+## Build Steps
+
+Build documentation:
+
+```sh
+cmake --build build --target doc_doxygen
+```
+
+Build shared library and examples:
+
+```sh
+cmake -B build -DCMAKE_BUILD_TYPE=Debug 
+cmake --build build --config Debug -j "$(nproc)"
+```
+
+Automate build steps:
+
+```sh
+chmod +x compile.sh
+./compile.sh
+```
+
+Can use -Debug or -Release:
+
+```sh
+./compile.sh -Release # Defaults to -Debug
+```
+
 ## References
 
 See Arch Linux installation documentation for latest instructions:
