@@ -15,7 +15,14 @@
 #include <stdlib.h>
 
 struct VkApplicationInfo* create_vk_application_info(char* pApplicationName, char* pEngineName) {
-    struct VkApplicationInfo* applicationInfo = (struct VkApplicationInfo*) malloc(sizeof(struct VkApplicationInfo));
+    struct VkApplicationInfo* applicationInfo = (struct VkApplicationInfo*) malloc(
+        sizeof(struct VkApplicationInfo)
+    );
+
+    if (!applicationInfo) {
+        return NULL;
+    }
+
     applicationInfo->sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     applicationInfo->pApplicationName = pApplicationName;
     applicationInfo->applicationVersion = VK_API_VERSION_1_0;
@@ -26,7 +33,14 @@ struct VkApplicationInfo* create_vk_application_info(char* pApplicationName, cha
 }
 
 struct VkInstanceCreateInfo* create_vk_instance_info(struct VkApplicationInfo* pApplicationInfo) {
-    struct VkInstanceCreateInfo* instanceInfo = (struct VkInstanceCreateInfo*) malloc(sizeof(struct VkInstanceCreateInfo));
+    struct VkInstanceCreateInfo* instanceInfo = (struct VkInstanceCreateInfo*) malloc(
+        sizeof(struct VkInstanceCreateInfo)
+    );
+
+    if (!instanceInfo) {
+        return NULL;
+    }
+
     instanceInfo->sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     instanceInfo->pApplicationInfo = pApplicationInfo;
     instanceInfo->enabledExtensionCount = 0;
@@ -47,12 +61,22 @@ void set_instance_info_validation_layers(struct VkInstanceCreateInfo* pInstanceI
 }
 
 vulkan_instance_t* create_vulkan_instance(char* pApplicationName, char* pEngineName) {
-    vulkan_instance_t* vkInstance = (vulkan_instance_t*) malloc(sizeof(vulkan_instance_t));
+    vulkan_instance_t* vkInstance = (vulkan_instance_t*) malloc(
+        sizeof(vulkan_instance_t)
+    );
 
-    vkInstance->applicationInfo = create_vk_application_info(pApplicationName, pEngineName);
+    if (!vkInstance) {
+        return NULL;
+    }
+
+    vkInstance->applicationInfo = create_vk_application_info(
+        pApplicationName, pEngineName
+    );
     vkInstance->instanceCreateInfo = create_vk_instance_info(vkInstance->applicationInfo);
 
-    VkResult result = vkCreateInstance(vkInstance->instanceCreateInfo, NULL, &vkInstance->handle);
+    VkResult result = vkCreateInstance(
+        vkInstance->instanceCreateInfo, NULL, &vkInstance->handle
+    );
     if (VK_SUCCESS != result) {
         fprintf(stderr, "Failed to create Vulkan instance! (Error code: %d)\n", result);
         exit(EXIT_FAILURE);
