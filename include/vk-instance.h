@@ -58,7 +58,7 @@ VkInstanceCreateInfo create_vk_instance_info(
  */
 void set_instance_info_extensions(
     VkInstanceCreateInfo* pInstanceInfo,
-    const char** extensions,
+    const char* const* extensions,
     uint32_t extensionCount
 );
 
@@ -71,7 +71,7 @@ void set_instance_info_extensions(
  */
 void set_instance_info_validation_layers(
     VkInstanceCreateInfo* pInstanceInfo,
-    const char** layers,
+    const char* const* layers,
     uint32_t layerCount
 );
 
@@ -84,7 +84,10 @@ void set_instance_info_validation_layers(
  * 
  * @note The caller is responsible for destroying the VulkanInstance using destroy_vulkan_instance.
  */
-vulkan_instance_t* create_vulkan_instance(const char* pApplicationName, const char* pEngineName);
+vulkan_instance_t* create_vulkan_instance(
+    const char* pApplicationName,
+    const char* pEngineName
+);
 
 /**
  * @brief Destroy a VulkanInstance and free associated memory.
