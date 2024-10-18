@@ -3,6 +3,7 @@
 # Add compute related examples
 set(EXAMPLES
     instance
+    device
     simple
 )
 
