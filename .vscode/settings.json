@@ -67,6 +67,8 @@
   "files.associations": {
     "*.tcss": "jinja-css",
     "*.h": "c",
-    "cstdlib": "c"
+    "cstdlib": "c",
+    "random": "c",
+    "cstdint": "c"
   }
 }
