@@ -8,6 +8,8 @@
 
 #include "vk-instance.h"
 
+#include <stdio.h>
+
 int main(void) {
     vulkan_instance_t* vkInstance = create_vulkan_instance("InstanceApp", "InstanceEngine");
     printf("Successfully Created vulkan instance!\n");
