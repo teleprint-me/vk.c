@@ -190,10 +190,14 @@ vulkan_queue_t* create_vulkan_queue(vulkan_device_t* vkDevice) {
 
     // Get queue family property count and properties
     vkQueue->queueFamilyPropertyCount = get_queue_family_property_count(vkDevice->physical);
-    vkQueue->queueFamilyProperties = get_queue_family_properties(vkDevice->physical, vkQueue->queueFamilyPropertyCount);
+    vkQueue->queueFamilyProperties = get_queue_family_properties(
+        vkDevice->physical, vkQueue->queueFamilyPropertyCount
+    );
 
     // Find the compute-capable queue family index
-    vkQueue->queueFamilyIndex = get_compute_queue_family_index(vkQueue->queueFamilyProperties, vkQueue->queueFamilyPropertyCount);
+    vkQueue->queueFamilyIndex = get_compute_queue_family_index(
+        vkQueue->queueFamilyProperties, vkQueue->queueFamilyPropertyCount
+    );
 
     // Set the queue family index in the device queue info
     vkQueue->deviceQueueInfo->queueFamilyIndex = vkQueue->queueFamilyIndex;
