@@ -11,7 +11,9 @@
 #include <stdio.h>
 
 int main(void) {
-    vulkan_instance_t* vkInstance = create_vulkan_instance("InstanceApp", "InstanceEngine");
+    const char* appName = "InstanceApp";
+    const char* engineName = "InstanceEngine";
+    vulkan_instance_t* vkInstance = create_vulkan_instance(appName, engineName);
     printf("Successfully Created vulkan instance!\n");
 
     destroy_vulkan_instance(vkInstance);
