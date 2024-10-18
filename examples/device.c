@@ -14,7 +14,7 @@ int main(void) {
         "DeviceApp", "DeviceEngine"
     );
     vulkan_device_t* vkDevice = create_vulkan_device(vkInstance);
-    vulkan_queue_t* vkQueue = create_vulkan_queue(vkDevice->physical);
+    vulkan_queue_t* vkQueue = create_vulkan_queue(vkDevice);
 
     destroy_vulkan_queue(vkQueue);
     destroy_vulkan_device(vkDevice);

@@ -117,7 +117,7 @@ struct VkQueue_T* get_logical_device_queue(
 );
 
 // @brief Initializes the VulkanQueue structure.
-vulkan_queue_t* create_vulkan_queue(struct VkPhysicalDevice_T* selectedPhysicalDevice);
+vulkan_queue_t* create_vulkan_queue(vulkan_device_t* vkDevice);
 
 // @brief Cleans up and destroys the VulkanQueue structure.
 void destroy_vulkan_queue(vulkan_queue_t* vkQueue);

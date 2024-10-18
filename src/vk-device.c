@@ -157,15 +157,6 @@ void free_queue_family_properties(
     }
 }
 
-vulkan_queue_t* create_vulkan_queue(vulkan_device_t* vkDevice) {
-    vulkan_queue_t* vkQueue = (vulkan_queue_t*) malloc(sizeof(vulkan_queue_t));
-
-    vkQueue->deviceQueueInfo = create_device_queue_info();
-    vkQueue->queueFamilyPropertyCount = get_queue_family_property_count(vkDevice->physical);
-
-    return vkQueue;
-}
-
 uint32_t get_compute_queue_family_index(
     struct VkQueueFamilyProperties* queueFamilyProperties,
     uint32_t queueFamilyPropertyCount
@@ -178,15 +169,6 @@ uint32_t get_compute_queue_family_index(
 
     // Fallback to first available queue family
     return 0;
-}
-
-struct VkQueue_T* get_logical_device_queue(
-    struct VkDevice_T* vkDevice, uint32_t queueFamilyIndex
-) {
-    // Retrieve the queue for compute operations
-    struct VkQueue_T* queue;
-    vkGetDeviceQueue(vkDevice, queueFamilyIndex, 0, &queue);
-    return queue;
 }
 
 /**
