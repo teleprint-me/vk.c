@@ -70,7 +70,7 @@ uint32_t get_compute_queue_family_index(
 );
 
 struct VkQueue_T* get_device_queue(
-    struct VkDevice_T* logicalDevice, uint32_t queueFamilyIndex
+    struct VkDevice_T* vkDevice, uint32_t queueFamilyIndex
 );
 
 vulkan_device_t* create_vulkan_device(vulkan_instance_t* vkInstance);
