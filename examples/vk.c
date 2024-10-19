@@ -19,9 +19,9 @@
 // @note we only need a help text and the ability to pass a file path to the
 // shader being utilized for compute operations.
 int main(void) {
-    /**
-     * Allocate resources
-     */
+    /**********************
+     * Allocate resources *
+     **********************/
 
     /**
      * Setup the Vulkan Instance Object
@@ -77,11 +77,19 @@ int main(void) {
     }
 
     /**
-     * Clean up allocated resources
+     * Setup the Vulkan Device Object
+     */
+
+    /********************************
+     * Clean up allocated resources *
+     ********************************/
+
+    /** 
+     * Destroy the Vulkan Device Object
      */
 
     /** 
-     * Destroy the Vulkan instance
+     * Destroy the Vulkan Instance Object
      */
     if (NULL == vkInstance) {
         fprintf(stderr, "vulkan_destroy_instance: vkInstance is NULL\n");
