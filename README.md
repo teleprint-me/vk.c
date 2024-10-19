@@ -4,16 +4,10 @@ A vulkan wrapper designed to simplify compute operations in pure C.
 ## Dependencies
 
 ```sh
-sudo pacman -S gcc gdb cmake doxygen
+sudo pacman -S gcc gdb cmake
 ```
 
 ## Build Steps
-
-Build documentation:
-
-```sh
-cmake --build build --target doc_doxygen
-```
 
 Build shared library and examples:
 
@@ -33,13 +27,6 @@ Can use -Debug or -Release:
 
 ```sh
 ./compile.sh Release # Defaults to Debug
-```
-
-Control documentation generation:
-
-```sh
-./compile.sh Release OFF  # Builds without documentation
-./compile.sh Debug ON    # Builds with documentation
 ```
 
 ## References
