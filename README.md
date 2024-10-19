@@ -39,3 +39,4 @@ See Kronos documentation for latest API:
 
 - [Vulkan Documentation](https://docs.vulkan.org/spec/latest/index.html)
 - [Vulkan Specification](https://registry.khronos.org/vulkan/specs/1.3/html/index.html)
+- [GLSL Specification](https://registry.khronos.org/OpenGL/specs/gl/GLSLangSpec.4.60.html)
