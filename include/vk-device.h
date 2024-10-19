@@ -34,12 +34,13 @@ VkDeviceCreateInfo vulkan_create_device_info(void);
 uint32_t vulkan_enumerate_physical_device_count(VkInstance vkInstance);
 
 // @brief Enumerates the physical devices available in the instance.
+// @note The caller needs to free it using vulkan_free_device_list()
 VkPhysicalDevice* vulkan_enumerate_physical_device_list(
     VkInstance vkInstance, uint32_t deviceCount
 );
 
 // @brief Frees the allocated physical device list.
-void vulkan_destroy_device_list(VkPhysicalDevice* physicalDeviceList);
+void vulkan_free_device_list(VkPhysicalDevice* physicalDeviceList);
 
 // @brief Retrieves properties of the selected physical device.
 VkPhysicalDeviceProperties vulkan_get_physical_device_properties(
@@ -77,6 +78,7 @@ VkDeviceQueueCreateInfo vulkan_create_device_queue_info(void);
 uint32_t vulkan_get_queue_family_property_count(VkPhysicalDevice selectedPhysicalDevice);
 
 // @brief Retrieves the queue family properties for the physical device.
+// @note The caller needs to free it using vulkan_free_queue_family_properties()
 VkQueueFamilyProperties* vulkan_get_queue_family_properties(
     VkPhysicalDevice selectedPhysicalDevice, uint32_t queueFamilyPropertyCount
 );
