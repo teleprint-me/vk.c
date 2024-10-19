@@ -213,31 +213,3 @@ void vulkan_destroy_queue(vulkan_queue_t* vkQueue) {
         free(vkQueue);  // Only free the structure itself
     }
 }
-
-/**
- * @brief
- */
-
-void initialize_device_queue(vulkan_device_t* vkDevice, vulkan_queue_t* vkQueue) {
-    // We're setting up 1 queue for now
-    vkDevice->deviceInfo->queueCreateInfoCount = 1;
-
-    // Set the queue family index in the device queue info
-    vkQueue->deviceQueueInfo->queueFamilyIndex = vkQueue->queueFamilyIndex;
-
-    // Pass the queue create info
-    vkDevice->deviceInfo->pQueueCreateInfos = vkQueue->deviceQueueInfo;
-
-    // Create a logical device
-    enum VkResult result = vkCreateDevice(
-        vkDevice->physical, vkDevice->deviceInfo, NULL, vkDevice->logical
-    );
-
-    if (VK_SUCCESS != result) {
-        fprintf(stderr, "Failed to create logical device! (Error code: %d)\n", result);
-        exit(EXIT_FAILURE);
-    }
-
-    // Retrieve the Vulkan queue handle from the logical device
-    vkGetDeviceQueue(vkDevice->logical, vkQueue->queueFamilyIndex, 0, &vkQueue->handle);
-}
