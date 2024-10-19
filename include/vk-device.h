@@ -72,19 +72,16 @@ typedef struct VulkanQueue {
 } vulkan_queue_t;
 
 // @brief Creates and initializes VkDeviceQueueCreateInfo structure.
-VkDeviceQueueCreateInfo vulkan_create_device_queue_info(void);
+VkDeviceQueueCreateInfo vulkan_create_device_queue_info(uint32_t queueFamilyIndex);
 
 // @brief Retrieves the count of queue family properties for the physical device.
 uint32_t vulkan_get_queue_family_property_count(VkPhysicalDevice selectedPhysicalDevice);
 
 // @brief Retrieves the queue family properties for the physical device.
 // @note The caller needs to free it using vulkan_free_queue_family_properties()
-VkQueueFamilyProperties* vulkan_get_queue_family_properties(
-    VkPhysicalDevice selectedPhysicalDevice, uint32_t queueFamilyPropertyCount
+void vulkan_get_queue_family_properties(
+    VkPhysicalDevice selectedPhysicalDevice, VkQueueFamilyProperties* queueFamilyProperties
 );
-
-// @brief Frees the allocated queue family properties array.
-void vulkan_free_queue_family_properties(VkQueueFamilyProperties* queueFamilyProperties);
 
 // @brief Finds the index of a queue family that supports compute operations.
 uint32_t vulkan_get_compute_queue_family_index(
