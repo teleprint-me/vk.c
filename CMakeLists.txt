@@ -38,39 +38,3 @@ set_target_properties(
 
 target_include_directories("vk" PUBLIC include)
 target_link_libraries("vk" PUBLIC m rt vulkan)
-
-# Find Doxygen
-find_package(Doxygen)
-
-if(DOXYGEN_FOUND)
-    message(STATUS "Doxygen found: ${DOXYGEN_EXECUTABLE}")
-    
-    # Set input and output directories
-    set(DOXYGEN_INPUT_DIR "${CMAKE_SOURCE_DIR}/include")
-    set(DOXYGEN_OUTPUT_DIR "${CMAKE_BINARY_DIR}/docs")
-    
-    # Configure Doxygen settings
-    set(DOXYGEN_GENERATE_LATEX OFF)
-    set(DOXYGEN_GENERATE_MAN OFF)
-    set(DOXYGEN_OUTPUT_DIRECTORY "${DOXYGEN_OUTPUT_DIR}")
-    set(DOXYGEN_RECURSIVE YES)
-    set(DOXYGEN_EXTRACT_ALL YES)
-    set(DOXYGEN_EXTRACT_PRIVATE YES)
-    set(DOXYGEN_GENERATE_HTML YES)
-    set(DOXYGEN_GENERATE_XML NO)
-    
-    # Generate the Doxyfile
-    configure_file(${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile @ONLY)
-    
-    # Add custom target for documentation
-    add_custom_target(doc_doxygen
-        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile
-        WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-        COMMENT "Generating API documentation with Doxygen"
-        VERBATIM
-    )
-    
-    message(STATUS "Doxygen documentation target 'doc_doxygen' added.")
-else()
-    message(WARNING "Doxygen not found. Documentation will not be generated.")
-endif()
