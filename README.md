@@ -35,6 +35,13 @@ Can use -Debug or -Release:
 ./compile.sh Release # Defaults to Debug
 ```
 
+Control documentation generation:
+
+```sh
+./compile.sh Release OFF  # Builds without documentation
+./compile.sh Debug ON    # Builds with documentation
+```
+
 ## References
 
 See Arch Linux installation documentation for latest instructions:
