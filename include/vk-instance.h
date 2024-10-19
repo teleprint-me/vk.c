@@ -34,7 +34,7 @@ typedef struct VulkanInstance {
  * 
  * @note The returned structure should be used to populate VkInstanceCreateInfo.
  */
-VkApplicationInfo create_vk_application_info(
+VkApplicationInfo vulkan_create_application_info(
     const char* pApplicationName,
     const char* pEngineName
 );
@@ -45,7 +45,7 @@ VkApplicationInfo create_vk_application_info(
  * @param pApplicationInfo Pointer to an initialized VkApplicationInfo structure.
  * @return VkInstanceCreateInfo Initialized VkInstanceCreateInfo structure.
  */
-VkInstanceCreateInfo create_vk_instance_info(
+VkInstanceCreateInfo vulkan_create_instance_info(
     const VkApplicationInfo* pApplicationInfo
 );
 
@@ -56,7 +56,7 @@ VkInstanceCreateInfo create_vk_instance_info(
  * @param extensions Array of extension names to enable.
  * @param extensionCount Number of extensions in the array.
  */
-void set_instance_info_extensions(
+void vulkan_set_instance_info_extensions(
     VkInstanceCreateInfo* pInstanceInfo,
     const char* const* extensions,
     uint32_t extensionCount
@@ -69,7 +69,7 @@ void set_instance_info_extensions(
  * @param layers Array of validation layer names to enable.
  * @param layerCount Number of layers in the array.
  */
-void set_instance_info_validation_layers(
+void vulkan_set_instance_info_validation_layers(
     VkInstanceCreateInfo* pInstanceInfo,
     const char* const* layers,
     uint32_t layerCount
@@ -84,7 +84,7 @@ void set_instance_info_validation_layers(
  * 
  * @note The caller is responsible for destroying the VulkanInstance using destroy_vulkan_instance.
  */
-vulkan_instance_t* create_vulkan_instance(
+vulkan_instance_t* vulkan_create_instance(
     const char* pApplicationName,
     const char* pEngineName
 );
@@ -94,7 +94,7 @@ vulkan_instance_t* create_vulkan_instance(
  * 
  * @param vkInstance Pointer to the VulkanInstance to destroy.
  */
-void destroy_vulkan_instance(vulkan_instance_t* vkInstance);
+void vulkan_destroy_instance(vulkan_instance_t* vkInstance);
 
 #ifdef __cplusplus
 }

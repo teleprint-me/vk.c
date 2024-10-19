@@ -16,14 +16,14 @@ int main(void) {
     const char* appName = "InstanceApp";
     const char* engineName = "InstanceEngine";
     
-    vulkan_instance_t* vkInstance = create_vulkan_instance(appName, engineName);
+    vulkan_instance_t* vkInstance = vulkan_create_instance(appName, engineName);
     if (NULL == vkInstance) {
         fprintf(stderr, "Failed to create Vulkan instance.\n");
         return EXIT_FAILURE;
     }
     printf("Successfully created Vulkan instance!\n");
 
-    destroy_vulkan_instance(vkInstance);
+    vulkan_destroy_instance(vkInstance);
     printf("Successfully destroyed Vulkan instance!\n");
 
     return EXIT_SUCCESS;
