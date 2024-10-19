@@ -3,7 +3,9 @@
  *
  * @file examples/simple.c
  * 
- * @note Apply zero-initialization strategy to maintain a "sane" default implementation.
+ * @note The primary objective with this example program is to perform summation
+ * using a discrete GPU with the Vulkan C API. The vk.c library is exposed to
+ * showcase the underlying logic.
  */
 
 #include "vk-instance.h"
@@ -17,72 +19,80 @@
 // @note we only need a help text and the ability to pass a file path to the
 // shader being utilized for compute operations.
 int main(void) {
-    // Create Vulkan instance
-    vulkan_instance_t* vkInstance = create_vulkan_instance("SimpleApp", "SimpleEngine");
+    /**
+     * Allocate resources
+     */
 
-    // Get the physical device count
-    uint32_t deviceCount = get_physical_device_count(vkInstance->handle);
+    /**
+     * Setup the Vulkan Instance Object
+     */
+    const char* applicationName = "ComputeApp";
+    const char* engineName = "ComputeEngine";
 
-    // Enumerate and create physical devices
-    struct VkPhysicalDevice_T** physicalDevices = create_physical_devices(
-        vkInstance->handle, deviceCount
+    // Allocate memory with zero-initialization
+    vulkan_instance_t* vkInstance = calloc(1, sizeof(vulkan_instance_t));
+    if (NULL == vkInstance) {
+        fprintf(stderr, "vulkan_create_instance: Failed to allocate memory for VulkanInstance\n");
+        return NULL;
+    }
+
+    // Initialize applicationInfo and instanceCreateInfo
+    vkInstance->applicationInfo = vulkan_create_application_info(
+        applicationName,
+        engineName
     );
+    vkInstance->instanceCreateInfo = vulkan_create_instance_info(&vkInstance->applicationInfo);
 
-    // Select the best physical device
-    struct VkPhysicalDevice_T* selectedPhysicalDevice = select_physical_device(
-        physicalDevices, deviceCount
-    );
+    // Example: Setting extensions and validation layers
+    // For headless compute, you might not need any extensions or layers initially
+    // Uncomment and modify the following lines as needed
 
-    // Get queue family properties for the selected device
-    uint32_t queueFamilyCount = get_physical_device_queue_family_count(
-        selectedPhysicalDevice
-    );
-    struct VkQueueFamilyProperties* queueFamilyProperties = create_queue_family_properties(
-        selectedPhysicalDevice, queueFamilyCount
-    );
+    /*
+    const char* extensions[] = {
+        // Add required extensions here, e.g., "VK_KHR_surface", "VK_EXT_debug_utils"
+    };
+    vulkan_set_instance_info_extensions(&vkInstance->instanceCreateInfo, extensions, sizeof(extensions)/sizeof(extensions[0]));
 
-    // Select the compute queue family
-    uint32_t deviceQueueFamilyIndex = get_physical_device_queue_family(
-        queueFamilyProperties, queueFamilyCount
-    );
+    const char* layers[] = {
+        // Add validation layers here if needed, e.g., "VK_LAYER_KHRONOS_validation"
+    };
+    vulkan_set_instance_info_validation_layers(&vkInstance->instanceCreateInfo, layers, sizeof(layers)/sizeof(layers[0]));
+    */
 
-    // Create a logical device with the selected queue family index
-    struct VkDeviceQueueCreateInfo* deviceQueueInfo = create_device_queue_info();
-    // Set the correct queue family index
-    deviceQueueInfo->queueFamilyIndex = deviceQueueFamilyIndex;
-
-    // Now, create a logical device
-    struct VkDevice_T* logicalDevice;  // Logical device handle
-    struct VkDeviceCreateInfo* deviceInfo = create_device_info();
-    // We're setting up 1 queue for now
-    deviceInfo->queueCreateInfoCount = 1;
-    // Pass the queue create info
-    deviceInfo->pQueueCreateInfos = deviceQueueInfo;
-
-    enum VkResult result = vkCreateDevice(
-        selectedPhysicalDevice, deviceInfo, NULL, &logicalDevice
+    // Create the Vulkan instance
+    VkResult result = vkCreateInstance(
+        &vkInstance->instanceCreateInfo,
+        NULL, // Allocation callbacks (optional)
+        &vkInstance->handle
     );
 
     if (VK_SUCCESS != result) {
-        fprintf(stderr, "Failed to create logical device! (Error code: %d)\n", result);
-        exit(EXIT_FAILURE);
+        fprintf(
+            stderr,
+            "vulkan_create_instance: Failed to create Vulkan instance! (Error code: %d)\n",
+            result
+        );
+        free(vkInstance);
+        return NULL;
     }
 
-    // Retrieve the queue for compute operations
-    struct VkQueue_T* logicalQueue;
-    vkGetDeviceQueue(logicalDevice, deviceQueueFamilyIndex, 0, &logicalQueue);
+    /**
+     * Clean up allocated resources
+     */
 
-    // Clean up logical device
-    vkDestroyDevice(logicalDevice, NULL);
+    /** 
+     * Destroy the Vulkan instance
+     */
+    if (NULL == vkInstance) {
+        fprintf(stderr, "vulkan_destroy_instance: vkInstance is NULL\n");
+        return;
+    }
 
-    // Clean up queue properties
-    destroy_queue_family_properties(queueFamilyProperties);
+    if (VK_NULL_HANDLE != vkInstance->handle) {
+        vkDestroyInstance(vkInstance->handle, NULL); // Vulkan instance cleanup
+    }
 
-    // Clean up physical devices
-    destroy_physical_devices(physicalDevices);
-
-    // Clean up Vulkan instance
-    destroy_vulkan_instance(vkInstance);
+    free(vkInstance);
 
     return 0;
 }
