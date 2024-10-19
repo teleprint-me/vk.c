@@ -38,7 +38,7 @@ int main(void) {
     vulkan_instance_t* vkInstance = calloc(1, sizeof(vulkan_instance_t));
     if (NULL == vkInstance) {
         fprintf(stderr, "vulkan_create_instance: Failed to allocate memory for VulkanInstance\n");
-        return NULL;
+        return EXIT_FAILURE;
     }
 
     // Initialize applicationInfo and instanceCreateInfo
@@ -78,7 +78,7 @@ int main(void) {
             result
         );
         free(vkInstance);
-        return NULL;
+        return EXIT_FAILURE;
     }
 
     /**
@@ -156,7 +156,7 @@ int main(void) {
      */
     if (NULL == vkInstance) {
         fprintf(stderr, "vulkan_destroy_instance: vkInstance is NULL\n");
-        return;
+        return EXIT_FAILURE;
     }
 
     if (VK_NULL_HANDLE != vkInstance->handle) {
@@ -165,5 +165,5 @@ int main(void) {
 
     free(vkInstance);
 
-    return 0;
+    return EXIT_SUCCESS;
 }
