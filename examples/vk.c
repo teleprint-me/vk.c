@@ -91,9 +91,9 @@ int main(void) {
     vulkan_device_t* vkDevice = (vulkan_device_t*) malloc(sizeof(vulkan_device_t));
 
     // Enumerate and select the physical device
-    vkDevice->physicalDeviceCount = vulkan_enumerate_physical_device_count(vkInstance);
+    vkDevice->physicalDeviceCount = vulkan_enumerate_physical_device_count(vkInstance->handle);
     VkPhysicalDevice* physicalDeviceList = vulkan_enumerate_physical_device_list(
-        vkInstance, vkDevice->physicalDeviceCount
+        vkInstance->handle, vkDevice->physicalDeviceCount
     );
     vkDevice->physicalDevice = vulkan_select_physical_device(
         physicalDeviceList, vkDevice->physicalDeviceCount
