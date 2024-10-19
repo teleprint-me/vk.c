@@ -9,16 +9,32 @@
 #include "vk-instance.h"
 #include "vk-device.h"
 
+#include <stdio.h>
+#include <stdlib.h>
+
 int main(void) {
-    vulkan_instance_t* vkInstance = create_vulkan_instance(
-        "DeviceApp", "DeviceEngine"
-    );
-    vulkan_device_t* vkDevice = create_vulkan_device(vkInstance);
-    vulkan_queue_t* vkQueue = create_vulkan_queue(vkDevice);
+    const char* appName = "InstanceApp";
+    const char* engineName = "InstanceEngine";
+    
+    vulkan_instance_t* vkInstance = vulkan_create_instance(appName, engineName);
+    if (NULL == vkInstance) {
+        fprintf(stderr, "Failed to create Vulkan instance.\n");
+        return EXIT_FAILURE;
+    }
+    printf("Successfully created Vulkan instance!\n");
 
-    destroy_vulkan_queue(vkQueue);
-    destroy_vulkan_device(vkDevice);
-    destroy_vulkan_instance(vkInstance);
+    vulkan_device_t* vkDevice = vulkan_create_device(vkInstance->handle);
+    if (NULL == vkDevice) {
+        fprintf(stderr, "Failed to create Vulkan device.\n");
+        return EXIT_FAILURE;
+    }
+    printf("Successfully created Vulkan device!\n");
 
-    return 0;
+    vulkan_destroy_device(vkDevice);
+    printf("Successfully destroyed Vulkan device!\n");
+
+    vulkan_destroy_instance(vkInstance);
+    printf("Successfully destroyed Vulkan instance!\n");
+
+    return EXIT_SUCCESS;
 }
