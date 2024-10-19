@@ -25,10 +25,14 @@ typedef struct VulkanDevice {
     VkPhysicalDeviceProperties physicalDeviceProperties; ///< Properties of the selected physical device
     VkDeviceCreateInfo deviceInfo; ///< Device creation info
     VkDevice logicalDevice; ///< Logical device handle
+    VkQueue logicalQueue; ///< Handle to the Vulkan queue
+    uint32_t queueFamilyIndex; ///< Index of the queue family
 } vulkan_device_t;
 
 // @brief Creates and initializes VkDeviceCreateInfo structure.
-VkDeviceCreateInfo vulkan_create_device_info(void);
+VkDeviceCreateInfo vulkan_create_device_info(
+    VkDeviceQueueCreateInfo* pQueueCreateInfos, uint32_t queueCreateInfoCount
+);
 
 // @brief Enumerates the number of physical devices available in the instance.
 uint32_t vulkan_enumerate_physical_device_count(VkInstance vkInstance);
@@ -62,15 +66,6 @@ vulkan_device_t* vulkan_create_device(VkInstance vkInstance);
 // @brief Cleans up and destroys the VulkanDevice structure.
 void vulkan_destroy_device(vulkan_device_t* vkDevice);
 
-// @brief Structure representing a Vulkan queue and its properties.
-typedef struct VulkanQueue {
-    VkQueue handle; ///< Handle to the Vulkan queue
-    uint32_t queueFamilyIndex; ///< Index of the queue family
-    uint32_t queueFamilyPropertyCount; ///< Number of properties in the queue family
-    VkQueueFamilyProperties queueFamilyProperties[16]; ///< Properties of the queue family (fixed size for simplicity)
-    VkDeviceQueueCreateInfo deviceQueueInfo; ///< Queue creation info
-} vulkan_queue_t;
-
 // @brief Creates and initializes VkDeviceQueueCreateInfo structure.
 VkDeviceQueueCreateInfo vulkan_create_device_queue_info(uint32_t queueFamilyIndex);
 
@@ -87,12 +82,6 @@ void vulkan_get_queue_family_properties(
 uint32_t vulkan_get_compute_queue_family_index(
     VkQueueFamilyProperties* queueFamilyProperties, uint32_t queueFamilyPropertyCount
 );
-
-// @brief Initializes the VulkanQueue structure.
-vulkan_queue_t* vulkan_create_queue(vulkan_device_t* vkDevice);
-
-// @brief Cleans up and destroys the VulkanQueue structure.
-void vulkan_destroy_queue(vulkan_queue_t* vkQueue);
 
 #ifdef __cplusplus
 }
