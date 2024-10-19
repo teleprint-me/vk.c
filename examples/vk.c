@@ -7,9 +7,9 @@
  * using a discrete GPU with the Vulkan C API. The vk.c library is exposed to
  * showcase the underlying logic.
  *
- * @todo Need to enable debugging as the project scope grows before it becomes an issue. It is
- * currently omitted to intentionally keep things as simple as possible due to the nature of
- * how complex the Vulkan C API is.
+ * @todo Need to enable debugging as the project scope grows before it becomes
+ * an issue. It is currently omitted to intentionally keep things as simple
+ * as possible due to the nature of how complex the Vulkan C API is.
  *
  * How to Build Manually:
  * gcc -o vk src/vk-instance.c src/vk-device.c examples/vk.c -I./include -lvulkan
