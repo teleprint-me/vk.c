@@ -1,7 +1,7 @@
 /**
  * Copyright © 2024 Austin Berrio
  *
- * @file examples/simple.c
+ * @file examples/vk.c
  *
  * @note The primary objective with this example program is to perform summation
  * using a discrete GPU with the Vulkan C API. The vk.c library is exposed to
