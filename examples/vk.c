@@ -2,11 +2,11 @@
  * Copyright © 2024 Austin Berrio
  *
  * @file examples/simple.c
- * 
+ *
  * @note The primary objective with this example program is to perform summation
  * using a discrete GPU with the Vulkan C API. The vk.c library is exposed to
  * showcase the underlying logic.
- * 
+ *
  * @todo Need to enable debugging as the project scope grows before it becomes an issue. It is
  * currently omitted to intentionally keep things as simple as possible due to the nature of
  * how complex the Vulkan C API is.
@@ -119,8 +119,7 @@ int main(void) {
     VkDeviceCreateInfo deviceCreateInfo = vulkan_create_device_info(&queueCreateInfo, 1);
 
     // Create the logical device
-    VkResult result = vkCreateDevice(vkDevice->physicalDevice, &deviceCreateInfo, NULL, &vkDevice->logicalDevice);
-
+    result = vkCreateDevice(vkDevice->physicalDevice, &deviceCreateInfo, NULL, &vkDevice->logicalDevice);
     if (VK_SUCCESS != result) {
         fprintf(stderr, "Failed to create logical device! (Error code: %d)\n", result);
         exit(EXIT_FAILURE);
