@@ -18,6 +18,10 @@
 extern "C" {
 #endif
 
+/**
+ * @brief Vulkan Device API that handles physical and logical device management.
+ */
+
 // @brief Structure representing a Vulkan device and related objects. 
 typedef struct VulkanDevice {
     uint32_t physicalDeviceCount; ///< Number of physical devices available
@@ -60,11 +64,9 @@ VkDevice vulkan_create_logical_device(
     VkPhysicalDevice selectedPhysicalDevice, VkDeviceCreateInfo deviceInfo
 );
 
-// @brief Initializes the VulkanDevice structure.
-vulkan_device_t* vulkan_create_device(VkInstance vkInstance);
-
-// @brief Cleans up and destroys the VulkanDevice structure.
-void vulkan_destroy_device(vulkan_device_t* vkDevice);
+/**
+ * @brief Vulkan Queue API that handles setup
+ */
 
 // @brief Creates and initializes VkDeviceQueueCreateInfo structure.
 VkDeviceQueueCreateInfo vulkan_create_device_queue_info(uint32_t queueFamilyIndex);
@@ -82,6 +84,16 @@ void vulkan_get_queue_family_properties(
 uint32_t vulkan_get_compute_queue_family_index(
     VkQueueFamilyProperties* queueFamilyProperties, uint32_t queueFamilyPropertyCount
 );
+
+/**
+ * @brief Create and destroy vulkan device types
+ */
+
+// @brief Initializes the VulkanDevice structure.
+vulkan_device_t* vulkan_create_device(VkInstance vkInstance);
+
+// @brief Cleans up and destroys the VulkanDevice structure.
+void vulkan_destroy_device(vulkan_device_t* vkDevice);
 
 #ifdef __cplusplus
 }
