@@ -4,7 +4,7 @@
 set(EXAMPLES
     instance
     device
-    simple
+    # simple
 )
 
 # Create executables for simple compute examples
