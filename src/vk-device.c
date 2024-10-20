@@ -42,7 +42,7 @@ uint32_t vulkan_enumerate_physical_device_count(VkInstance vkInstance) {
         exit(EXIT_FAILURE);
     }
 
-    if (deviceCount == 0) {
+    if (0 == deviceCount) {
         fprintf(stderr, "No GPUs with Vulkan support found!\n");
         exit(EXIT_FAILURE);
     }
@@ -55,7 +55,7 @@ VkPhysicalDevice* vulkan_enumerate_physical_device_list(VkInstance vkInstance, u
         deviceCount * sizeof(VkPhysicalDevice)
     );
 
-    if (physicalDeviceList == NULL) {
+    if (NULL == physicalDeviceList) {
         fprintf(stderr, "Failed to allocate memory for physical device list!\n");
         return NULL;
     }
@@ -71,7 +71,7 @@ VkPhysicalDevice* vulkan_enumerate_physical_device_list(VkInstance vkInstance, u
 }
 
 void vulkan_free_device_list(VkPhysicalDevice* physicalDeviceList) {
-    if (physicalDeviceList != NULL) {
+    if (NULL != physicalDeviceList) {
         free(physicalDeviceList);
     }
 }
@@ -207,8 +207,8 @@ vulkan_device_t* vulkan_create_device(VkInstance vkInstance) {
 }
 
 void vulkan_destroy_device(vulkan_device_t* vkDevice) {
-    if (vkDevice != NULL) {
-        if (vkDevice->logicalDevice != VK_NULL_HANDLE) {
+    if (NULL != vkDevice) {
+        if (VK_NULL_HANDLE != vkDevice->logicalDevice) {
             vkDestroyDevice(vkDevice->logicalDevice, NULL);
         }
         free(vkDevice);

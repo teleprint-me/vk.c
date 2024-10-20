@@ -20,7 +20,7 @@ VkShaderModuleCreateInfo vulkan_create_shader_module_info(
 
 FILE* vulkan_read_shader_module(const char* filepath) {
     FILE* file = fopen(filepath, "rb");
-    if (!file) {
+    if (NULL == file) {
         fprintf(stderr, "Failed to open SPIR-V file: %s\n", filepath);
         exit(EXIT_FAILURE);
     }
@@ -37,7 +37,7 @@ size_t vulkan_calculate_shader_module_size(FILE* file) {
 
 char* vulkan_create_shader_module_buffer(FILE* file, size_t fileSize) {
     char* buffer = (char*)malloc(fileSize);
-    if (!buffer) {
+    if (NULL == buffer) {
         fprintf(stderr, "Failed to allocate shader module buffer: %zu\n", fileSize);
         exit(EXIT_FAILURE);
     }
@@ -47,7 +47,7 @@ char* vulkan_create_shader_module_buffer(FILE* file, size_t fileSize) {
 
 vulkan_shader_t* vulkan_create_shader(VkDevice device, const char* filepath) {
     vulkan_shader_t* shader = (vulkan_shader_t*) malloc(sizeof(vulkan_shader_t));
-    if (!shader) {
+    if (NULL == shader) {
         fprintf(stderr, "Failed to allocate memory for Vulkan shader structure\n");
         exit(EXIT_FAILURE);
     }
@@ -73,7 +73,7 @@ vulkan_shader_t* vulkan_create_shader(VkDevice device, const char* filepath) {
 
 void vulkan_destroy_shader(VkDevice device, vulkan_shader_t* shader) {
     if (shader) {
-        if (shader->module != VK_NULL_HANDLE) {
+        if (VK_NULL_HANDLE != shader->module) {
             vkDestroyShaderModule(device, shader->module, NULL);
         }
         if (shader->buffer) {
