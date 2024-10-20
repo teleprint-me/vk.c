@@ -8,6 +8,16 @@
 
 #include <stdlib.h>
 
+VkShaderModuleCreateInfo vulkan_create_shader_module_info(
+    char* buffer, size_t codeSize
+) {
+    VkShaderModuleCreateInfo shaderInfo = {};
+    shaderInfo.sType = VK_STRUCTURE_TYPE_SHADER_MODULE_CREATE_INFO;
+    shaderInfo.codeSize = codeSize;
+    shaderInfo.pCode = (uint32_t*)buffer;
+    return shaderInfo;
+}
+
 FILE* vulkan_read_shader_module(const char* filepath) {
     FILE* file = fopen(filepath, "rb");
     if (!file) {
@@ -35,13 +45,6 @@ char* vulkan_create_shader_module_buffer(FILE* file, size_t fileSize) {
     return buffer;
 }
 
-void vulkan_setup_shader_module_info(
-    VkShaderModuleCreateInfo* shaderInfo, char* buffer, size_t fileSize
-) {
-    shaderInfo->codeSize = fileSize;
-    shaderInfo->pCode = (uint32_t*)buffer;
-}
-
 vulkan_shader_t* vulkan_create_shader(VkDevice device, const char* filepath) {
     vulkan_shader_t* shader = (vulkan_shader_t*) malloc(sizeof(vulkan_shader_t));
     if (!shader) {
@@ -53,10 +56,12 @@ vulkan_shader_t* vulkan_create_shader(VkDevice device, const char* filepath) {
     shader->bufferSize = vulkan_calculate_shader_module_size(file);
     shader->buffer = vulkan_create_shader_module_buffer(file, shader->bufferSize);
 
-    VkShaderModuleCreateInfo shaderInfo = vulkan_create_shader_module_info();
-    vulkan_setup_shader_module_info(&shaderInfo, shader->buffer, shader->bufferSize);
+    VkShaderModuleCreateInfo shaderInfo = vulkan_create_shader_module_info(
+        shader->buffer, shader->bufferSize
+    );
 
-    if (VK_SUCCESS != vkCreateShaderModule(device, &shaderInfo, NULL, &shader->module)) {
+    VkResult result = vkCreateShaderModule(device, &shaderInfo, NULL, &shader->module);
+    if (VK_SUCCESS != result) {
         fprintf(stderr, "Failed to create shader module!\n");
         exit(EXIT_FAILURE);
     }

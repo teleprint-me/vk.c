@@ -19,22 +19,17 @@ typedef struct VulkanShader {
     size_t bufferSize;      ///< Size of the shader code buffer
 } vulkan_shader_t;
 
-// @brief Creates and returns a VkShaderModuleCreateInfo structure with default values.
-VkShaderModuleCreateInfo vulkan_create_shader_module_info(void);
+// @brief Creates and returns a VkShaderModuleCreateInfo structure.
+VkShaderModuleCreateInfo vulkan_create_shader_module_info(char* buffer, size_t codeSize);
 
-// @brief Reads the shader module file and returns the buffer.
+// @brief Reads the shader module file and returns the FILE*.
 FILE* vulkan_read_shader_module(const char* filepath);
 
 // @brief Calculates the size of the shader module file.
 size_t vulkan_calculate_shader_module_size(FILE* file);
 
-// @brief Creates the shader module buffer based on the file size.
+// @brief Creates a buffer for the shader module based on the file size.
 char* vulkan_create_shader_module_buffer(FILE* file, size_t fileSize);
-
-// @brief Sets up the VkShaderModuleCreateInfo structure with the buffer and file size.
-void vulkan_setup_shader_module_info(
-    VkShaderModuleCreateInfo* shaderInfo, char* buffer, size_t fileSize
-);
 
 // @brief Initializes the vulkan_shader_t structure and creates the shader module.
 vulkan_shader_t* vulkan_create_shader(VkDevice device, const char* filepath);
