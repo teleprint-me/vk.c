@@ -27,8 +27,8 @@ static struct option long_options[] = {
 };
 
 int main(int argc, char* argv[]) {
-    const char* appName = "DeviceApp";
-    const char* engineName = "DeviceEngine";
+    const char* appName = "ShaderApp";
+    const char* engineName = "ShaderEngine";
     char* shaderPath = NULL;
 
     // Parse command line options
