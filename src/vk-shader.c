@@ -8,7 +8,7 @@
 
 #include <stdlib.h>
 
-FILE* read_shader_module(const char* filepath) {
+FILE* vulkan_read_shader_module(const char* filepath) {
     FILE* file = fopen(filepath, "rb");
     if (!file) {
         fprintf(stderr, "Failed to open SPIR-V file: %s\n", filepath);
@@ -17,7 +17,7 @@ FILE* read_shader_module(const char* filepath) {
     return file;
 }
 
-size_t calculate_shader_module_size(FILE* file) {
+size_t vulkan_calculate_shader_module_size(FILE* file) {
     // Get file size
     fseek(file, 0, SEEK_END);
     size_t fileSize = ftell(file);
@@ -25,7 +25,7 @@ size_t calculate_shader_module_size(FILE* file) {
     return fileSize;
 }
 
-char* create_shader_module_buffer(FILE* file, size_t fileSize) {
+char* vulkan_create_shader_module_buffer(FILE* file, size_t fileSize) {
     char* buffer = (char*)malloc(fileSize);
     if (!buffer) {
         fprintf(stderr, "Failed to allocate shader module buffer: %zu\n", fileSize);
@@ -35,29 +35,45 @@ char* create_shader_module_buffer(FILE* file, size_t fileSize) {
     return buffer;
 }
 
-void setup_shader_module_info(
+void vulkan_setup_shader_module_info(
     VkShaderModuleCreateInfo* shaderInfo, char* buffer, size_t fileSize
 ) {
     shaderInfo->codeSize = fileSize;
     shaderInfo->pCode = (uint32_t*)buffer;
 }
 
-VkShaderModule create_shader_module(
-    VkDevice device, VkShaderModuleCreateInfo* shaderInfo, const char* filepath
-) {
-    FILE* file = read_shader_module(filepath);
-    size_t fileSize = calculate_shader_module_size(file);
-    char* buffer = create_shader_module_buffer(file, fileSize);
-    setup_shader_module_info(shaderInfo, buffer, fileSize);
+vulkan_shader_t* vulkan_create_shader(VkDevice device, const char* filepath) {
+    vulkan_shader_t* shader = (vulkan_shader_t*) malloc(sizeof(vulkan_shader_t));
+    if (!shader) {
+        fprintf(stderr, "Failed to allocate memory for Vulkan shader structure\n");
+        exit(EXIT_FAILURE);
+    }
 
-    VkShaderModule shaderModule;
-    if (VK_SUCCESS != vkCreateShaderModule(device, shaderInfo, NULL, &shaderModule)) {
+    FILE* file = vulkan_read_shader_module(filepath);
+    shader->bufferSize = vulkan_calculate_shader_module_size(file);
+    shader->buffer = vulkan_create_shader_module_buffer(file, shader->bufferSize);
+
+    VkShaderModuleCreateInfo shaderInfo = vulkan_create_shader_module_info();
+    vulkan_setup_shader_module_info(&shaderInfo, shader->buffer, shader->bufferSize);
+
+    if (VK_SUCCESS != vkCreateShaderModule(device, &shaderInfo, NULL, &shader->module)) {
         fprintf(stderr, "Failed to create shader module!\n");
         exit(EXIT_FAILURE);
     }
 
-    // clean up
-    fclose(file); // close the shader module binary file
-    free(buffer); // close the shader module memory buffer
-    return shaderModule;
+    fclose(file);  // Close the SPIR-V file as it's no longer needed
+
+    return shader;
+}
+
+void vulkan_destroy_shader(VkDevice device, vulkan_shader_t* shader) {
+    if (shader) {
+        if (shader->module != VK_NULL_HANDLE) {
+            vkDestroyShaderModule(device, shader->module, NULL);
+        }
+        if (shader->buffer) {
+            free(shader->buffer);  // Free the shader code buffer
+        }
+        free(shader);  // Free the shader structure
+    }
 }
