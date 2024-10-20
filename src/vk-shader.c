@@ -36,7 +36,7 @@ size_t vulkan_calculate_shader_module_size(FILE* file) {
 }
 
 char* vulkan_create_shader_module_buffer(FILE* file, size_t fileSize) {
-    char* buffer = (char*)malloc(fileSize);
+    char* buffer = (char*) malloc(fileSize);
     if (NULL == buffer) {
         fprintf(stderr, "Failed to allocate shader module buffer: %zu\n", fileSize);
         exit(EXIT_FAILURE);
