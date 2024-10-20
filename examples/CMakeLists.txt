@@ -4,6 +4,7 @@
 set(EXAMPLES
     instance
     device
+    shader
 )
 
 # Create executables for simple compute examples
