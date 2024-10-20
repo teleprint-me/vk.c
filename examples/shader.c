@@ -4,7 +4,7 @@
  * @file examples/shader.c
  * 
  * @brief A simple example showcasing how to create and destroy custom
- * vulkan instance, device and queue, and shader objects.
+ * vulkan instance, device, and shader objects.
  */
 
 #include "vk-instance.h"
@@ -13,60 +13,48 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
 #include <getopt.h>
-#include <unistd.h>
 #include <stdbool.h>
 
-void print_usage(char* argv[]) {
-    fprintf(
-        stderr,
-        "Usage: "
-        "%s [--help] "
-        "path/to/file.comp\n",
-        argv[0]
-    );
+void print_usage(const char* program_name) {
+    fprintf(stderr, "Usage: %s [--help] path/to/shader.spv\n", program_name);
 }
 
 // Define command line option structure
-static struct option long_options[]
-    = {{"help", 0, NULL, 'h'},
-       {0, 0, NULL, 0}};
+static struct option long_options[] = {
+    {"help", no_argument, NULL, 'h'},
+    {0, 0, 0, 0}
+};
 
 int main(int argc, char* argv[]) {
     const char* appName = "DeviceApp";
     const char* engineName = "DeviceEngine";
-    char* shaderPath = NULL;  // Path to SPIR-V shader file
+    char* shaderPath = NULL;
 
-    while (true) {
-        static int opt_index = 0;
-
-        int c = getopt_long(argc, argv, "h:s:n:m:", long_options, &opt_index);
-
-        if (c == -1) {
-            break;
-        }
-
-        switch (c) {
+    // Parse command line options
+    int option_index = 0;
+    int opt;
+    while ((opt = getopt_long(argc, argv, "h", long_options, &option_index)) != -1) {
+        switch (opt) {
             case 'h':
-                print_usage(argv);
+                print_usage(argv[0]);
                 return EXIT_SUCCESS;
-            case 's':
-                // Convert seed input
-                shaderPath = (char*) optarg;
-                if (NULL == shaderPath) {
-                    fprintf(stderr, "Failed to create GLSL shader path.\n");
-                    return EXIT_FAILURE;
-                }
-                printf("Setting position to: %d\n", shaderPath);
-                break;
             default:
-                print_usage(argv);
+                print_usage(argv[0]);
                 return EXIT_FAILURE;
         }
     }
 
-    // Create the instance object
+    // Ensure a shader file path is provided
+    if (optind < argc) {
+        shaderPath = argv[optind];  // Get the positional argument (shader path)
+    } else {
+        fprintf(stderr, "Error: Missing required shader file path.\n");
+        print_usage(argv[0]);
+        return EXIT_FAILURE;
+    }
+
+    // Create the Vulkan instance
     vulkan_instance_t* vkInstance = vulkan_create_instance(appName, engineName);
     if (NULL == vkInstance) {
         fprintf(stderr, "Failed to create Vulkan instance.\n");
@@ -74,7 +62,7 @@ int main(int argc, char* argv[]) {
     }
     printf("Successfully created Vulkan instance!\n");
 
-    // Create the device object
+    // Create the Vulkan device
     vulkan_device_t* vkDevice = vulkan_create_device(vkInstance->handle);
     if (NULL == vkDevice) {
         fprintf(stderr, "Failed to create Vulkan device.\n");
@@ -82,7 +70,7 @@ int main(int argc, char* argv[]) {
     }
     printf("Successfully created Vulkan device!\n");
 
-    // Create the shader object
+    // Create the shader module
     vulkan_shader_t* vkShader = vulkan_create_shader(vkDevice->logicalDevice, shaderPath);
     if (NULL == vkShader) {
         fprintf(stderr, "Failed to create Vulkan shader.\n");
@@ -90,15 +78,15 @@ int main(int argc, char* argv[]) {
     }
     printf("Successfully created Vulkan shader!\n");
 
-    // Destroy the shader object
+    // Destroy the shader module
     vulkan_destroy_shader(vkDevice->logicalDevice, vkShader);
     printf("Successfully destroyed Vulkan shader!\n");
 
-    // Destroy the device object
+    // Destroy the Vulkan device
     vulkan_destroy_device(vkDevice);
     printf("Successfully destroyed Vulkan device!\n");
 
-    // Destroy the instance object
+    // Destroy the Vulkan instance
     vulkan_destroy_instance(vkInstance);
     printf("Successfully destroyed Vulkan instance!\n");
 
