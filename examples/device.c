@@ -13,8 +13,8 @@
 #include <stdlib.h>
 
 int main(void) {
-    const char* appName = "InstanceApp";
-    const char* engineName = "InstanceEngine";
+    const char* appName = "DeviceApp";
+    const char* engineName = "DeviceEngine";
     
     vulkan_instance_t* vkInstance = vulkan_create_instance(appName, engineName);
     if (NULL == vkInstance) {
