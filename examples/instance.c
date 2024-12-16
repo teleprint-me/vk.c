@@ -18,6 +18,8 @@ const char* validationLayers[VALIDATION_LAYER_COUNT] = {"VK_LAYER_KHRONOS_valida
  * @brief Simple example showcasing how to create and destroy a custom VulkanInstance object.
  */
 int main(void) {
+    VkResult result;
+
     const char* applicationName = "InstanceApp";
     const char* engineName = "InstanceEngine";
 
@@ -37,14 +39,18 @@ int main(void) {
 
     VkInstanceCreateInfo instanceInfo = vulkan_create_instance_info(&applicationInfo);
 
-    vulkan_set_instance_info_validation_layers(&instanceInfo, validationLayers, VALIDATION_LAYER_COUNT);
+    result = vulkan_set_instance_info_validation_layers(&instanceInfo, validationLayers, VALIDATION_LAYER_COUNT);
+    if (VK_SUCCESS != result) {
+        return result;
+    }
 
     VkInstance instance;
-    VkResult result = vkCreateInstance(&instanceInfo, NULL, &instance);
+    result = vkCreateInstance(&instanceInfo, NULL, &instance);
     if (VK_SUCCESS != result) {
         LOG_ERROR("%s: Failed to create Vulkan instance! (Error code: %d)\n", __func__, result);
         return result;
     }
+
     printf("Successfully created Vulkan instance!\n");
 
     vkDestroyInstance(instance, NULL);
