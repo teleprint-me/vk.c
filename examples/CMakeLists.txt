@@ -3,8 +3,8 @@
 # Add compute related examples
 set(EXAMPLES
     instance
-    device
-    shader
+    # device
+    # shader
 )
 
 # Create executables for simple compute examples
