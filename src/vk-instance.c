@@ -3,33 +3,59 @@
  *
  * @file src/vk-instance.c
  *
- * @brief Create the VkInstance object with "sane" defaults.
+ * @brief Simplify the creation pipeline for the VkInstance object.
  * 
+ * The general idea is to keep the initialization process as simple, modular, and dry as possible.
+ *
+ * Create the VkInstance object with "sane" defaults.
+ *  
  * @note Apply zero-initialization strategy to maintain a "sane" default implementation.
+ * @note Keep the implementation as reasonably simple for now.
+ * @note VK_VERSION is deprecated and superseded by VK_API_VERSION
+ * 
+ * Example: Setting extensions and validation layers
+ * For headless compute, you might not need any extensions or layers initially
+ * Modify the following lines as needed
+ *
+ * const char* extensions[] = {
+ *     // Add required extensions here, e.g., "VK_KHR_surface", "VK_EXT_debug_utils"
+ * };
+ * vulkan_set_instance_info_extensions(&instanceCreateInfo, extensions, extensionCount);
+ *
+ * const char* layers[] = {
+ *     // Add validation layers here if needed, e.g., "VK_LAYER_KHRONOS_validation"
+ * };
+ * vulkan_set_instance_info_validation_layers(&instanceCreateInfo, layers, layerCount);
  */
 
-#include "vk-instance.h"
-
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
-VkApplicationInfo vulkan_create_application_info(
-    const char* pApplicationName,
-    const char* pEngineName
-) {
+#include "logger.h"
+#include "vk-instance.h"
+
+uint32_t vulkan_get_api_version(void) {
+    uint32_t apiVersion;
+    if (vkEnumerateInstanceVersion(&apiVersion) != VK_SUCCESS) {
+        fprintf(stderr, "Failed to enumerate Vulkan instance version.\n");
+        return 0;
+    }
+    return apiVersion;
+}
+
+VkApplicationInfo vulkan_create_application_info(const char* pApplicationName, const char* pEngineName) {
     VkApplicationInfo applicationInfo = {0}; // Zero-initialize all members
-    applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
-    applicationInfo.pApplicationName = pApplicationName;
-    applicationInfo.applicationVersion = VK_API_VERSION_1_0;
-    applicationInfo.pEngineName = pEngineName;
-    applicationInfo.engineVersion = VK_API_VERSION_1_0;
-    applicationInfo.apiVersion = VK_API_VERSION_1_2;
+    applicationInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO; // Structure type
+    applicationInfo.pApplicationName = pApplicationName; // Application name
+    applicationInfo.applicationVersion = VK_API_VERSION_1_0; // Application version
+    applicationInfo.pEngineName = pEngineName; // Engine name
+    applicationInfo.engineVersion = VK_API_VERSION_1_0; // Engine version
+    applicationInfo.apiVersion = vulkan_get_api_version(); // API version (e.g. Vulkan 1.2)
     return applicationInfo;
 }
 
-VkInstanceCreateInfo vulkan_create_instance_info(
-    const VkApplicationInfo* pApplicationInfo
-) {
+VkInstanceCreateInfo vulkan_create_instance_info(const VkApplicationInfo* pApplicationInfo) {
     VkInstanceCreateInfo instanceInfo = {0}; // Zero-initialize all members
     instanceInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     instanceInfo.pApplicationInfo = pApplicationInfo;
@@ -41,94 +67,89 @@ VkInstanceCreateInfo vulkan_create_instance_info(
 }
 
 void vulkan_set_instance_info_extensions(
-    VkInstanceCreateInfo* pInstanceInfo,
-    const char* const* extensions,
-    uint32_t extensionCount
+    VkInstanceCreateInfo* pInstanceInfo, const char* const* extensions, uint32_t extensionCount
 ) {
     if (NULL == pInstanceInfo) {
-        fprintf(stderr, "vulkan_set_instance_info_extensions: pInstanceInfo is NULL\n");
+        LOG_ERROR("%s: pInstanceInfo is NULL\n", __func__);
         return;
     }
     pInstanceInfo->enabledExtensionCount = extensionCount;
     pInstanceInfo->ppEnabledExtensionNames = extensions;
 }
 
-void vulkan_set_instance_info_validation_layers(
-    VkInstanceCreateInfo* pInstanceInfo,
-    const char* const* layers,
-    uint32_t layerCount
-) {
-    if (NULL == pInstanceInfo) {
-        fprintf(stderr, "vulkan_set_instance_info_validation_layers: pInstanceInfo is NULL\n");
-        return;
+VkResult vulkan_check_validation_layer_support(const char* const* layers, uint32_t layerCount) {
+    if (!layers || !(*layers) || 0 == layerCount) {
+        LOG_ERROR("%s: Invalid arguments (layers=%p, layerCount=%u)\n", __func__, layers, layerCount);
+        return VK_ERROR_INITIALIZATION_FAILED;
     }
+
+    VkResult result;
+
+    uint32_t layerPropertyCount = 0;
+    result = vkEnumerateInstanceLayerProperties(&layerPropertyCount, NULL);
+    if (VK_SUCCESS != result) {
+        LOG_ERROR("%s: Failed to enumerate layer property count (error code: %u)\n", __func__, result);
+        return result;
+    }
+    if (0 == layerPropertyCount) {
+        LOG_ERROR("%s: No validation layers available\n", __func__);
+        return VK_ERROR_LAYER_NOT_PRESENT;
+    }
+
+    VkLayerProperties* availableLayers = (VkLayerProperties*) malloc(layerPropertyCount * sizeof(VkLayerProperties));
+    if (!availableLayers) {
+        LOG_ERROR("%s: Memory allocation failed for layer properties\n", __func__);
+        return VK_ERROR_OUT_OF_HOST_MEMORY;
+    }
+
+    result = vkEnumerateInstanceLayerProperties(&layerPropertyCount, availableLayers);
+    if (VK_SUCCESS != result) {
+        LOG_ERROR("%s: Failed to enumerate layer properties (error code: %u)\n", __func__, result);
+        free(availableLayers);
+        return result;
+    }
+
+    // Check to see if the available layers match the requested layers.
+    for (uint32_t i = 0; i < layerCount; ++i) {
+        bool layerFound = false;
+        for (uint32_t j = 0; j < layerPropertyCount; ++j) {
+            if (strcmp(layers[i], availableLayers[j].layerName) == 0) {
+                layerFound = true;
+                break;
+            }
+        }
+        if (!layerFound) {
+            LOG_ERROR("%s: Validation layer not found: %s\n", __func__, layers[i]);
+            free(availableLayers);
+            return VK_ERROR_LAYER_NOT_PRESENT;
+        }
+    }
+
+    free(availableLayers);
+    return VK_SUCCESS;
+}
+
+VkResult vulkan_set_instance_info_validation_layers(
+    VkInstanceCreateInfo* pInstanceInfo, const char* const* layers, uint32_t layerCount
+) {
+    if (!pInstanceInfo) {
+        LOG_ERROR("%s: pInstanceInfo is NULL\n", __func__);
+        return VK_ERROR_INITIALIZATION_FAILED;
+    }
+
+    VkResult result = vulkan_check_validation_layer_support(layers, layerCount);
+    if (VK_SUCCESS != result) {
+        return result;
+    }
+
     pInstanceInfo->enabledLayerCount = layerCount;
     pInstanceInfo->ppEnabledLayerNames = layers;
+
+    return VK_SUCCESS;
 }
 
-vulkan_instance_t* vulkan_create_instance(
-    const char* pApplicationName,
-    const char* pEngineName
-) {
-    // Allocate memory with zero-initialization
-    vulkan_instance_t* vkInstance = calloc(1, sizeof(vulkan_instance_t));
-    if (NULL == vkInstance) {
-        fprintf(stderr, "vulkan_create_instance: Failed to allocate memory for VulkanInstance\n");
-        return NULL;
+void vulkan_destroy_instance(VkInstance instance) {
+    if (instance) {
+        vkDestroyInstance(instance, NULL);
     }
-
-    // Initialize applicationInfo and instanceCreateInfo
-    vkInstance->applicationInfo = vulkan_create_application_info(
-        pApplicationName,
-        pEngineName
-    );
-    vkInstance->instanceCreateInfo = vulkan_create_instance_info(&vkInstance->applicationInfo);
-
-    // Example: Setting extensions and validation layers
-    // For headless compute, you might not need any extensions or layers initially
-    // Uncomment and modify the following lines as needed
-
-    /*
-    const char* extensions[] = {
-        // Add required extensions here, e.g., "VK_KHR_surface", "VK_EXT_debug_utils"
-    };
-    vulkan_set_instance_info_extensions(&vkInstance->instanceCreateInfo, extensions, sizeof(extensions)/sizeof(extensions[0]));
-
-    const char* layers[] = {
-        // Add validation layers here if needed, e.g., "VK_LAYER_KHRONOS_validation"
-    };
-    vulkan_set_instance_info_validation_layers(&vkInstance->instanceCreateInfo, layers, sizeof(layers)/sizeof(layers[0]));
-    */
-
-    // Create the Vulkan instance
-    VkResult result = vkCreateInstance(
-        &vkInstance->instanceCreateInfo,
-        NULL, // Allocation callbacks (optional)
-        &vkInstance->handle
-    );
-
-    if (VK_SUCCESS != result) {
-        fprintf(
-            stderr,
-            "vulkan_create_instance: Failed to create Vulkan instance! (Error code: %d)\n",
-            result
-        );
-        free(vkInstance);
-        return NULL;
-    }
-
-    return vkInstance;
-}
-
-void vulkan_destroy_instance(vulkan_instance_t* vkInstance) {
-    if (NULL == vkInstance) {
-        fprintf(stderr, "vulkan_destroy_instance: vkInstance is NULL\n");
-        return;
-    }
-
-    if (VK_NULL_HANDLE != vkInstance->handle) {
-        vkDestroyInstance(vkInstance->handle, NULL); // Vulkan instance cleanup
-    }
-
-    free(vkInstance);
 }
