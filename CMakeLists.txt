@@ -67,5 +67,4 @@ set_target_properties(
 )
 
 target_include_directories("vk" PUBLIC include)
-target_link_libraries("vk" PUBLIC m rt vulkan)
-target_link_libraries("vk" PRIVATE asan)
+target_link_libraries("vk" PUBLIC asan m rt vulkan)
