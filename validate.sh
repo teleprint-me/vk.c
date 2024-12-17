@@ -4,27 +4,20 @@
 # Script: validate.sh
 # Purpose:
 #   - Validate memory safety using Valgrind.
-#   - Optionally bypass AddressSanitizer (ASAN) link order verification.
-#   - Run Valgrind in isolation without modifying other scripts.
+#   - Ensure ASAN runtime is correctly preloaded for the child process.
 #
 # Why:
-#   - ASAN sometimes reports false positives due to external libraries
-#     (e.g., Vulkan validation layers, ICU).
-#   - Valgrind acts as a backup to verify true memory safety.
+#   - Valgrind and AddressSanitizer (ASAN) can conflict when both intercept memory symbols.
+#   - Valgrind complains if ASAN runtime isn’t linked first, so we ensure it is preloaded.
 #
 # Usage:
 #   ./validate.sh <program> [args...]
-#
-# Options:
-#   - Set ASAN_OPTIONS to bypass link verification if needed.
-#   - Set LSAN_OPTIONS to suppress known harmless leaks.
-#
 # ---------------------------------------------------------
 
 # Suppression file for known false positives
 SUPPRESSION_FILE="$(pwd)/asan.supp"
 
-# Enable or disable ASAN link order bypass (set to 1 to enable)
+# Enable or disable ASAN link order bypass
 BYPASS_ASAN_LINK_ORDER=0
 
 # Configure ASAN options
@@ -34,13 +27,11 @@ else
     ASAN_OPTIONS=""
 fi
 
-# Configure LSAN options (quietly suppress known false positives)
-LSAN_OPTIONS="suppressions=$SUPPRESSION_FILE"
-
 # Preload AddressSanitizer runtime library
 LD_PRELOAD=$(gcc -print-file-name=libasan.so)
+# Configure LSAN options (quietly suppress known false positives)
+LSAN_OPTIONS="suppressions=${SUPPRESSION_FILE}"
 
-# Export options to environment
 export LD_PRELOAD ASAN_OPTIONS LSAN_OPTIONS
 
 # Check for input arguments
@@ -49,5 +40,8 @@ if [[ $# -lt 1 ]]; then
     exit 1
 fi
 
-# Run the program with Valgrind for memory leak checks
-valgrind --leak-check=full --show-leak-kinds=all "$@"
+# Run the program with Valgrind and ensure LD_PRELOAD propagates
+valgrind --leak-check=full \
+         --show-leak-kinds=all \
+         --trace-children=yes \
+         -s "$@"
